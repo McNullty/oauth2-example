@@ -1,0 +1,3 @@
+logging:
+  level:
+    com.mladen.cikara.oauth2: trace

@@ -7,7 +7,7 @@ Authorization Service and Resource Service will be on same server for this examp
 WARNING: New JWT token has to be retrieved after every restart of the server. 
 
 ## TODO
-- [ ] Add tests for /public, /private and /actuator/health end points
+- [x] Add tests for /public, /private and /actuator/health end points
 - [ ] Configure server to work only with HTTPS protocol
 - [ ] Add support for retrieving user information from database
 - [ ] Add support for retrieving client information from database (web clients)

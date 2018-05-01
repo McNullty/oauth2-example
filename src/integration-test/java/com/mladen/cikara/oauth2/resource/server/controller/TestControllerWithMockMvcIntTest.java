@@ -25,10 +25,10 @@ import org.springframework.test.web.servlet.MockMvc;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class TestControllerWithMockMvcTest {
+public class TestControllerWithMockMvcIntTest {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(TestControllerWithMockMvcTest.class);
+      LoggerFactory.getLogger(TestControllerWithMockMvcIntTest.class);
 
   @Autowired
   private MockMvc mockMvc;

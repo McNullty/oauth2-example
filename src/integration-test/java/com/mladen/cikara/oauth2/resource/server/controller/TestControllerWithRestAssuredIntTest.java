@@ -26,10 +26,10 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class TestControllerWithRestAssuredTest {
+public class TestControllerWithRestAssuredIntTest {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(TestControllerWithRestAssuredTest.class);
+      LoggerFactory.getLogger(TestControllerWithRestAssuredIntTest.class);
 
   @Autowired
   private MockMvc mockMvc;

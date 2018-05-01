@@ -2,6 +2,14 @@ logging:
   level:
     com.mladen.cikara.oauth2: debug
 
+server:
+  port: 8443
+  ssl:
+    key-store: classpath:keystore.p12
+    key-store-password: mladen
+    keyStoreType: PKCS12
+    keyAlias: tomcat
+
 spring:
   security:
     user:

@@ -6,6 +6,6 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:1111/oauth2-test
+#    url: jdbc:postgresql://localhost:1111/oauth2-test
     username: oauth2user
     password: oauth2user

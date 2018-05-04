@@ -24,6 +24,7 @@
 		<java.version>1.8</java.version>
 		<spring-cloud.version>Finchley.RC1</spring-cloud.version>
 		<spring-security-jwt.version>1.0.9.RELEASE</spring-security-jwt.version>
+		<docker.compose.rule.junit4.version>0.33.0</docker.compose.rule.junit4.version>
 	</properties>
 
 	<dependencies>
@@ -78,6 +79,13 @@
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.palantir.docker.compose</groupId>
+			<artifactId>docker-compose-rule-junit4</artifactId>
+			<version>${docker.compose.rule.junit4.version}</version>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- Test dependencies -->
@@ -201,7 +209,7 @@
 							<goal>integration-test</goal>
 						</goals>
 						<configuration>
-
+							<forkCount>0</forkCount>
 							<includes>
 								<include>**/*IntTest.class</include>
 							</includes>

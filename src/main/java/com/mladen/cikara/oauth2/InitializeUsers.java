@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class InitializeUsers implements ApplicationRunner {
 
+  private static final String PASSWORD = "secret";
   private static final String ADMIN_EMAIL = "admin@oauth2.com";
   private static final String USER_EMAIL = "user@oauth2.com";
   private static final String SYS_ADMIN_EMAIL = "sysadmin@oauth2.com";
@@ -57,21 +58,21 @@ public class InitializeUsers implements ApplicationRunner {
       final Collection<Authority> authorities = new ArrayList<>();
       authorities.addAll(Arrays.asList(Authority.ROLE_ADMIN, Authority.ROLE_USER));
 
-      insertUser(ADMIN_EMAIL, "secret", "Application", "Admin", authorities);
+      insertUser(ADMIN_EMAIL, PASSWORD, "Application", "Admin", authorities);
     }
 
     if (!userRepository.findByEmail(USER_EMAIL).isPresent()) {
       final Collection<Authority> authorities = new ArrayList<>();
       authorities.add(Authority.ROLE_USER);
 
-      insertUser(USER_EMAIL, "secret", "User", "User", authorities);
+      insertUser(USER_EMAIL, PASSWORD, "User", "User", authorities);
     }
 
     if (!userRepository.findByEmail(SYS_ADMIN_EMAIL).isPresent()) {
       final Collection<Authority> authorities = new ArrayList<>();
       authorities.add(Authority.ROLE_SYS_ADMIN);
 
-      insertUser(SYS_ADMIN_EMAIL, "secret", "System", "Admin", authorities);
+      insertUser(SYS_ADMIN_EMAIL, PASSWORD, "System", "Admin", authorities);
     }
   }
 }

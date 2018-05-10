@@ -1,5 +1,6 @@
 package com.mladen.cikara.oauth2.resource.server.controller;
 
+import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -9,7 +10,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.mladen.cikara.oauth2.util.OAuth2AuthorizationBuilder;
+import com.palantir.docker.compose.DockerComposeRule;
+import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.waiting.HealthChecks;
 
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -17,18 +23,50 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 @ActiveProfiles("test")
-@RunWith(SpringRunner.class)
-@SpringBootTest
 @AutoConfigureMockMvc
-public class TestControllerWithMockMvcTest {
+@DirtiesContext
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+public class TestControllerWithMockMvcIntTest {
+
+  private static final String PASSWORD = "secret";
+
+  private static final String USERNAME = "user@oauth2.com";
 
   private static final Logger logger =
-      LoggerFactory.getLogger(TestControllerWithMockMvcTest.class);
+      LoggerFactory.getLogger(TestControllerWithMockMvcIntTest.class);
+
+  @ClassRule
+  public static DockerComposeRule docker =
+      DockerComposeRule.builder()
+          .file("src/test/resources/docker-compose-test.yml")
+          .waitingForService("testdb", HealthChecks.toHaveAllPortsOpen())
+          .build();
+
+  @BeforeClass
+  public static void setupClass() throws InterruptedException {
+    // Thread.sleep(500l);
+
+    final DockerPort postgresPort = docker.containers()
+        .container("testdb")
+        .port(5432);
+
+    logger.debug("Database port: {}", postgresPort);
+
+    final String springDatabaseUrl =
+        "jdbc:postgresql://localhost:" + postgresPort.getExternalPort() + "/oauth2-test";
+
+    logger.debug("Database url: {}", springDatabaseUrl);
+
+    System.setProperty("spring.datasource.url", springDatabaseUrl);
+  }
 
   @Autowired
   private MockMvc mockMvc;
@@ -39,8 +77,8 @@ public class TestControllerWithMockMvcTest {
          .oauth2Request(mockMvc)
            .grantType("password")
            .accessTokenUrl("/oauth/token")
-           .username("user")
-           .password("44947188-6f69-44f9-a8c3-315dab31ec89")
+           .username(USERNAME)
+           .password(PASSWORD)
            .clientId("d4486b29-7f28-43db-8d4e-44df6b5785c9")
            .clientSecret("a6f59937-fc55-485c-bf91-c8bcdaae2e45")
            .scope("bla")
@@ -51,19 +89,25 @@ public class TestControllerWithMockMvcTest {
   }
 
   @Test
-  public void whenGetActuatorHealthWithAuthentication_thenOk() throws Exception {
-    final String jwt = getJwt();
+  public void whenGetActuatorHealthWithAuthentication_thenOk() {
 
-    logger.debug("JWT {}", jwt);
+    String jwt;
+    try {
+      jwt = getJwt();
+
+      logger.debug("JWT {}", jwt);
 
 // @formatter:off
-    mockMvc.
+      mockMvc.
       perform(get("/actuator/health").header("Authorization", "Bearer " + jwt)).
       andDo(print()).
       andExpect(status().isOk()).
       andExpect(jsonPath("$.status", is("UP")))
       ;
 // @formatter:on
+    } catch (final Exception e) {
+      fail("Failed getting JWT. {}", e.getMessage());
+    }
   }
 
   @Test

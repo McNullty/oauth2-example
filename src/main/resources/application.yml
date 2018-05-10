@@ -2,6 +2,12 @@ logging:
   level:
     com.mladen.cikara.oauth2: debug
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
 server:
   port: 8443
   ssl:
@@ -11,6 +17,21 @@ server:
     keyAlias: tomcat
 
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost/oauth2
+    username: oauth2user
+    password: oauth2user
+  flyway:
+    user: oauth2
+    password: oauth2
+    validate-on-migrate: true
+  jpa:
+#    generate-ddl: true
+    properties:
+      hibernate.ddl-auto: validate # Use this when using flyway for database creation
+#      hibernate.ddl-auto: create # Use this to see what would Hibernate create in database.
+      hibernate.temp.use_jdbc_metadata_defaults: false # this removes warning "java.sql.SQLFeatureNotSupportedException: Method org.postgresql.jdbc.PgConnection.createClob() is not yet implemented."
+    show-sql: true
   security:
     user:
       password: 44947188-6f69-44f9-a8c3-315dab31ec89

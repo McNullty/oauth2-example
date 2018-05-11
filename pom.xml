@@ -265,6 +265,14 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+			<id>palantir-milestones</id>
+			<name>Palantir Repository</name>
+			<url>https://dl.bintray.com/palantir/releases/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 
 

@@ -3,11 +3,9 @@ package com.mladen.cikara.oauth2.resource.server.controller;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.containsString;
 
+import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
 import com.mladen.cikara.oauth2.util.OAuth2AuthorizationBuilder;
 import com.palantir.docker.compose.DockerComposeRule;
-import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.waiting.HealthChecks;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -36,174 +34,106 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TestControllerWithRestAssuredIntTest {
 
-  private static final String PASSWORD = "secret";
+	private static final String PASSWORD = "secret";
 
-  private static final String USERNAME = "user@oauth2.com";
+	private static final String USERNAME = "user@oauth2.com";
 
-  private static final Logger logger =
-      LoggerFactory.getLogger(TestControllerWithRestAssuredIntTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(TestControllerWithRestAssuredIntTest.class);
 
-  @ClassRule
-  public static DockerComposeRule docker =
-      DockerComposeRule.builder()
-          .file("src/test/resources/docker-compose-test.yml")
-          .waitingForService("testdb", HealthChecks.toHaveAllPortsOpen())
-          .build();
+	@ClassRule
+	public static DockerComposeRule docker = DockerComposeRuleUtil.getDockerComposeRule();
 
-  @BeforeClass
-  public static void setupClass() throws InterruptedException {
-    // Thread.sleep(50l);
+	@BeforeClass
+	public static void setupClass() throws InterruptedException {
+		DockerComposeRuleUtil.setDatabaseUrlProperty(docker);
+	}
 
-    final DockerPort postgresPort = docker.containers()
-        .container("testdb")
-        .port(5432);
+	@Autowired
+	private MockMvc mockMvc;
 
-    logger.debug("Database port: {}", postgresPort);
+	private String getJwt() throws Exception {
+		// @formatter:off
+		final String jwt = OAuth2AuthorizationBuilder.oauth2Request(mockMvc).grantType("password")
+				.accessTokenUrl("/oauth/token").username(USERNAME).password(PASSWORD)
+				.clientId("d4486b29-7f28-43db-8d4e-44df6b5785c9").clientSecret("a6f59937-fc55-485c-bf91-c8bcdaae2e45")
+				.scope("bla").getAccessToken();
+		// @formatter:on
 
-    final String springDatabaseUrl =
-        "jdbc:postgresql://localhost:" + postgresPort.getExternalPort() + "/oauth2-test";
+		return jwt;
+	}
 
-    logger.debug("Database url: {}", springDatabaseUrl);
+	@Before
+	public void setup() throws Exception {
+		logger.debug("Configuring RestAssuredMockMvc");
 
-    System.setProperty("spring.datasource.url", springDatabaseUrl);
-  }
+		RestAssuredMockMvc.mockMvc(mockMvc);
+	}
 
-  @Autowired
-  private MockMvc mockMvc;
+	@Test
+	public void whenGetActuatorHealtNoAuthentication_thenUnauthorized() throws Exception {
 
-  private String getJwt() throws Exception {
-// @formatter:off
-    final String jwt = OAuth2AuthorizationBuilder
-        .oauth2Request(mockMvc)
-          .grantType("password")
-          .accessTokenUrl("/oauth/token")
-          .username(USERNAME)
-          .password(PASSWORD)
-          .clientId("d4486b29-7f28-43db-8d4e-44df6b5785c9")
-          .clientSecret("a6f59937-fc55-485c-bf91-c8bcdaae2e45")
-          .scope("bla")
-          .getAccessToken();
-// @formatter:on
+		// @formatter:off
+		final MvcResult response = given().log().all().when().get("/actuator/health").then().log().all()
+				.statusCode(HttpStatus.UNAUTHORIZED.value()).extract().response().mvcResult();
 
-    return jwt;
-  }
+		logger.debug("Response: {}", response);
+		// @formatter:on
+	}
 
-  @Before
-  public void setup() throws Exception {
-    logger.debug("Configuring RestAssuredMockMvc");
+	@Test
+	public void whenGetActuatorHealtWithAuthentication_thenOk() throws Exception {
 
-    RestAssuredMockMvc.mockMvc(mockMvc);
-  }
+		final String jwt = getJwt();
 
-  @Test
-  public void whenGetActuatorHealtNoAuthentication_thenUnauthorized() throws Exception {
+		logger.debug("JWT {}", jwt);
 
-// @formatter:off
-    final MvcResult response =
-        given().
-          log().all().
-        when().
-          get("/actuator/health").
-        then().
-          log().all().
-          statusCode(HttpStatus.UNAUTHORIZED.value()).
-          extract().response().mvcResult()
-          ;
+		// @formatter:off
+		final MvcResult response = given().header("Authorization", "Bearer " + jwt).log().all().when()
+				.get("/actuator/health").then().log().all().statusCode(HttpStatus.OK.value())
+				.body("status", containsString("UP")).extract().response().mvcResult();
 
-      logger.debug("Response: {}", response);
-// @formatter:on
-  }
+		logger.debug("Response: {}", response);
+		// @formatter:on
+	}
 
-  @Test
-  public void whenGetActuatorHealtWithAuthentication_thenOk() throws Exception {
+	@Test
+	public void whenGetPrivateHomeWithAuthentication_thenOk() throws Exception {
 
-    final String jwt = getJwt();
+		final String jwt = getJwt();
 
-    logger.debug("JWT {}", jwt);
+		logger.debug("JWT {}", jwt);
 
-// @formatter:off
-    final MvcResult response =
-        given().
-          header("Authorization", "Bearer " + jwt).
-          log().all().
-        when().
-          get("/actuator/health").
-        then().
-          log().all().
-          statusCode(HttpStatus.OK.value()).
-          body("status", containsString("UP")).
-          extract().response().mvcResult()
-          ;
+		// @formatter:off
+		final MvcResult response = given().header("Authorization", "Bearer " + jwt).log().all().when().get("/private")
+				.then().log().all().statusCode(HttpStatus.OK.value()).contentType(ContentType.TEXT)
+				.body(containsString("Hello from the private side")).extract().response().mvcResult();
 
-      logger.debug("Response: {}", response);
-// @formatter:on
-  }
+		logger.debug("Response: {}", response);
+		// @formatter:on
+	}
 
-  @Test
-  public void whenGetPrivateHomeWithAuthentication_thenOk() throws Exception {
+	@Test
+	public void whenGetPrivateHomeWithNoAuthentication_thenUnauthorized() throws Exception {
 
-    final String jwt = getJwt();
+		// @formatter:off
+		final MvcResult response = given().log().all().when().get("/private").then().log().all()
+				.statusCode(HttpStatus.UNAUTHORIZED.value()).extract().response().mvcResult();
 
-    logger.debug("JWT {}", jwt);
+		logger.debug("Response: {}", response);
+		// @formatter:on
+	}
 
-// @formatter:off
-    final MvcResult response =
-        given().
-          header("Authorization", "Bearer " + jwt).
-          log().all().
-        when().
-          get("/private").
-        then().
-          log().all().
-          statusCode(HttpStatus.OK.value()).
-          contentType(ContentType.TEXT).
-          body(containsString("Hello from the private side")).
-          extract().response().mvcResult()
-          ;
+	@Test
+	public void whenGetPublicHomeWithNoAuthentication_thenOk() throws Exception {
 
-      logger.debug("Response: {}", response);
-// @formatter:on
-  }
+		// @formatter:off
+		final MvcResult response = given().log().all().when().get("/public").then().log().all()
+				.statusCode(HttpStatus.OK.value()).contentType(ContentType.TEXT)
+				.body(containsString("Hello from the public side")).extract().response().mvcResult();
 
-  @Test
-  public void whenGetPrivateHomeWithNoAuthentication_thenUnauthorized() throws Exception {
+		logger.debug("Response: {}", response);
+		// @formatter:on
 
-// @formatter:off
-    final MvcResult response =
-        given().
-          log().all().
-        when().
-          get("/private").
-        then().
-          log().all().
-          statusCode(HttpStatus.UNAUTHORIZED.value()).
-          extract().response().mvcResult()
-          ;
-
-      logger.debug("Response: {}", response);
-// @formatter:on
-  }
-
-  @Test
-  public void whenGetPublicHomeWithNoAuthentication_thenOk() throws Exception {
-
-// @formatter:off
-    final MvcResult response =
-      given().
-        log().all().
-      when().
-        get("/public").
-      then().
-        log().all().
-        statusCode(HttpStatus.OK.value()).
-        contentType(ContentType.TEXT).
-        body(containsString("Hello from the public side")).
-        extract().response().mvcResult()
-        ;
-
-    logger.debug("Response: {}", response);
-// @formatter:on
-
-  }
+	}
 
 }

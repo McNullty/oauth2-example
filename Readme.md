@@ -9,5 +9,5 @@ WARNING: New JWT token has to be retrieved after every restart of the server.
 ## TODO
 - [x] Add tests for /public, /private and /actuator/health end points
 - [x] Configure server to work only with HTTPS protocol
-- [ ] Add support for retrieving user information from database
+- [X] Add support for retrieving user information from database
 - [ ] Add support for retrieving client information from database (web clients)

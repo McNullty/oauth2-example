@@ -1,4 +1,5 @@
 /target/
+/src/generated-sources/
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###

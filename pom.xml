@@ -25,6 +25,7 @@
 		<java.version>1.8</java.version>
 		<spring-cloud.version>Finchley.RC1</spring-cloud.version>
 		<spring-security-jwt.version>1.0.9.RELEASE</spring-security-jwt.version>
+		<modelmapper.version>1.1.3</modelmapper.version>
 		<docker.compose.rule.junit4.version>0.33.0</docker.compose.rule.junit4.version>
 	</properties>
 
@@ -80,6 +81,12 @@
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>${modelmapper.version}</version>
 		</dependency>
 
 		<dependency>

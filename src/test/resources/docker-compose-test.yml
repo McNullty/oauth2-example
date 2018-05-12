@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  testdb:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=oauth2
+      - POSTGRES_USER=oauth2
+      - POSTGRES_DB=oauth2-test
+    ports:
+      - 5432
+      

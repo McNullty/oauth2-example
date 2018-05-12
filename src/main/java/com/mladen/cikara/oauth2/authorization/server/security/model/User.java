@@ -23,8 +23,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString(exclude= {"password"})
 @Entity
 @Table(name = "oauth2_user")
 public class User {

@@ -88,9 +88,52 @@ public class RegisterActionIntTest {
 	}
 
 	@Test
-	public void whenPostInvalidUserData_thenBadRequest() throws Exception {
-		JSONObject jsonObj = new JSONObject().put("email", "").put("firstName", 1).put("password", "secret")
+	public void whenPostMisssingField_thenBadRequest() throws Exception {
+		JSONObject jsonObj = new JSONObject().put("email", "test@test.org").put("firstName", "TestName").put("password", "secret")
 				.put("passwordConfirmation", "secret");
+
+		// @formatter:off
+		final MvcResult response = given().body(jsonObj.toString()).contentType(ContentType.JSON).log().all().when()
+				.post("/register").then().log().all().statusCode(HttpStatus.BAD_REQUEST.value())
+				.extract().response()
+				.mvcResult();
+
+		logger.debug("Response: {}", response);
+		// @formatter:on
+	}
+	
+	@Test
+	public void whenPostFieldWitheEmptyString_thenBadRequest() throws Exception {
+		JSONObject jsonObj = new JSONObject().put("email", "test@test.org").put("firstName", "")
+				.put("lastName", "TestSurname").put("password", "secret").put("passwordConfirmation", "secret");
+
+		// @formatter:off
+		final MvcResult response = given().body(jsonObj.toString()).contentType(ContentType.JSON).log().all().when()
+				.post("/register").then().log().all().statusCode(HttpStatus.BAD_REQUEST.value()).extract().response()
+				.mvcResult();
+
+		logger.debug("Response: {}", response);
+		// @formatter:on
+	}
+	
+	@Test
+	public void whenPostInvalidEmail_thenBadRequest() throws Exception {
+		JSONObject jsonObj = new JSONObject().put("email", "test").put("firstName", "TestName")
+				.put("lastName", "TestSurname").put("password", "secret").put("passwordConfirmation", "secret");
+
+		// @formatter:off
+		final MvcResult response = given().body(jsonObj.toString()).contentType(ContentType.JSON).log().all().when()
+				.post("/register").then().log().all().statusCode(HttpStatus.BAD_REQUEST.value()).extract().response()
+				.mvcResult();
+
+		logger.debug("Response: {}", response);
+		// @formatter:on
+	}
+	
+	@Test
+	public void whenPostCorrectUserDataThatAlreadyExists_thenBadRequest() throws Exception {
+		JSONObject jsonObj = new JSONObject().put("email", "admin@oauth2.com").put("firstName", "TestName")
+				.put("lastName", "TestSurname").put("password", "secret").put("passwordConfirmation", "secret");
 
 		// @formatter:off
 		final MvcResult response = given().body(jsonObj.toString()).contentType(ContentType.JSON).log().all().when()

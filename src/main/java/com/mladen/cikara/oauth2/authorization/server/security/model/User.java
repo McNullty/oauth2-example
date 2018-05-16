@@ -22,11 +22,13 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+
 import lombok.Data;
 import lombok.ToString;
 
 @Data
-@ToString(exclude= {"password"})
+@ToString(exclude = { "password" })
 @Entity
 @Table(name = "oauth2_user")
 public class User {
@@ -85,5 +87,28 @@ public class User {
    */
   public void addAuthority(Authority authority) {
     authorities.add(authority);
+  }
+
+  /**
+   * This method accepts password in clear text and hashes it before storing it in
+   * password filed.
+   *
+   * @param password
+   *          Clear text password
+   */
+  public void setClearTextPassword(String password) {
+    this.password = PasswordEncoderFactories
+        .createDelegatingPasswordEncoder()
+        .encode(password);
+  }
+
+  /**
+   * This method accepts hashed passwords. To set password with clear text use
+   * method {@link #setClearTextPassword}
+   *
+   * @param password
+   */
+  public void setPassword(String password) {
+    this.password = password;
   }
 }

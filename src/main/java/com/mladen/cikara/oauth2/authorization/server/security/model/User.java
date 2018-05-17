@@ -22,6 +22,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 
 import lombok.Data;
@@ -32,6 +34,8 @@ import lombok.ToString;
 @Entity
 @Table(name = "oauth2_user")
 public class User {
+
+  private static final Logger log = LoggerFactory.getLogger(User.class);
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -97,6 +101,8 @@ public class User {
    *          Clear text password
    */
   public void setClearTextPassword(String password) {
+    log.debug("Encoding clear password");
+
     this.password = PasswordEncoderFactories
         .createDelegatingPasswordEncoder()
         .encode(password);

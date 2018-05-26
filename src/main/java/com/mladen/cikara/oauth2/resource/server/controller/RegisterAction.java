@@ -36,7 +36,7 @@ public class RegisterAction {
 	public ResponseEntity<?> registerUser(@Valid @RequestBody UserDto userDto) {
 		logger.trace("Got user DTO: {}", userDto);
 
-		validatePasswords(userDto);
+		verifyInputData(userDto);
 
 		User user = convertToEntity(userDto);
 
@@ -48,6 +48,18 @@ public class RegisterAction {
 		UserResource userResource = new UserResource(newUser);
 
 		return ResponseEntity.created(URI.create(userResource.getLink("self").getHref())).build();
+	}
+
+	private void verifyInputData(UserDto userDto) {
+		validatePasswords(userDto);
+		
+		validateEmailDoesntExist(userDto.getEmail());
+	}
+
+	private void validateEmailDoesntExist(String email) {
+		if(userRepository.findByEmail(email).isPresent()) {
+			throw new EmailAlreadyRegisterd();
+		}
 	}
 
 	private void validatePasswords(UserDto userDto) {

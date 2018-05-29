@@ -2,6 +2,12 @@ package com.mladen.cikara.oauth2.authorization.server.security.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
+import com.mladen.cikara.oauth2.authorization.server.security.model.User;
+import com.mladen.cikara.oauth2.authorization.server.security.model.UserDto;
+import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
+import com.palantir.docker.compose.DockerComposeRule;
+
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -13,12 +19,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
-import com.mladen.cikara.oauth2.authorization.server.security.model.User;
-import com.mladen.cikara.oauth2.authorization.server.security.model.UserDto;
-import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
-import com.palantir.docker.compose.DockerComposeRule;
-
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @DirtiesContext
@@ -26,31 +26,31 @@ import com.palantir.docker.compose.DockerComposeRule;
 @SpringBootTest
 public class UserServiceImplTest {
 
-	@ClassRule
-	public static DockerComposeRule docker = DockerComposeRuleUtil.getDockerComposeRule();
+  @ClassRule
+  public static DockerComposeRule docker = DockerComposeRuleUtil.getDockerComposeRule();
 
-	@BeforeClass
-	public static void setupClass() throws InterruptedException {
-		DockerComposeRuleUtil.setDatabaseUrlProperty(docker);
-	}
+  @BeforeClass
+  public static void setupClass() throws InterruptedException {
+    DockerComposeRuleUtil.setDatabaseUrlProperty(docker);
+  }
 
-	@Autowired
-	private UserService userService;
+  @Autowired
+  private UserService userService;
 
-	@Test
-	public void whenSavingUser_thenUserIsAssignedRoleUser() {
-		UserDto userDto = new UserDto();
-		userDto.setEmail("test@test.com");
-		userDto.setFirstName("testFirstName");
-		userDto.setLastName("testLastName");
-		userDto.setPassword("password");
-		userDto.setPasswordConfirmation("password");
+  @Test
+  public void whenSavingUser_thenUserIsAssignedRoleUser() {
+    final UserDto userDto = new UserDto();
+    userDto.setEmail("test@test.com");
+    userDto.setFirstName("testFirstName");
+    userDto.setLastName("testLastName");
+    userDto.setPassword("password");
+    userDto.setPasswordConfirmation("password");
 
-		User createdUser = userService.registerUser(userDto);
+    final User createdUser = userService.registerUser(userDto);
 
-		assertThat(createdUser.getAuthorities()).contains(Authority.ROLE_USER);
-	}
-	
-	// TODO: Add all the rest of assertions about Registering user
+    assertThat(createdUser.getAuthorities()).contains(Authority.ROLE_USER);
+  }
+
+  // TODO: Add all the rest of assertions about Registering user
 
 }

@@ -9,27 +9,27 @@ import lombok.Data;
 import lombok.ToString;
 
 @Data
-@ToString(exclude= {"password", "passwordConfirmation"})
+@ToString(exclude = { "password", "passwordConfirmation" })
 public class UserDto {
 
-	@Email
-	@NotNull
-	private String email;
-	
-	@Size(max = 50)
-	@NotBlank
-	private String firstName;
-	
-	@Size(max = 50)
-	@NotBlank
-	private String lastName;
+  @Email
+  @NotNull
+  private String email;
 
-	@Size(max = 50)
-	@NotBlank
-	private String password;
-	
-	@Size(max = 50)
-	@NotBlank
-	private String passwordConfirmation;
-	
+  @Size(max = 50)
+  @NotBlank
+  private String firstName;
+
+  @Size(max = 50)
+  @NotBlank
+  private String lastName;
+
+  @Size(max = 50)
+  @NotBlank
+  private String password;
+
+  @Size(max = 50)
+  @NotBlank
+  private String passwordConfirmation;
+
 }

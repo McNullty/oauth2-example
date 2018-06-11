@@ -8,7 +8,7 @@ WARNING: New JWT token has to be retrieved after every restart of the server.
 
 ## Docker database
 ```bash
-docker run -it --rm --name oauth2-postgres -e POSTGRES_USER=oauth2 -e POSTGRES_PASSWORD=oauth2 postgres
+docker run -it --rm --name oauth2-postgres -p 5432:5432 -e POSTGRES_USER=oauth2 -e POSTGRES_PASSWORD=oauth2 postgres
 ```
 
 ## TODO

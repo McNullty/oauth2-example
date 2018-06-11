@@ -43,7 +43,7 @@ public class InitializeUsers implements ApplicationRunner {
             .encode(password));
     user.setFirstName(firstName);
     user.setLastName(lastName);
-    user.addAllAuthority(authorities);
+    user.addAllAuthority(authorities.toArray(new Authority[0]));
 
     userRepository.save(user);
 

@@ -2,7 +2,7 @@ package com.mladen.cikara.oauth2.authorization.server.security.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,12 +22,20 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString(exclude = { "password" })
 @Entity
 @Table(name = "oauth2_user")
 public class User {
+
+  private static final Logger log = LoggerFactory.getLogger(User.class);
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,9 +64,7 @@ public class User {
 
   @JsonIgnore
   @ElementCollection(targetClass = Authority.class, fetch = FetchType.EAGER)
-  @JoinTable(
-      name = "user_authority",
-      joinColumns = @JoinColumn(name = "user_id"))
+  @JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id"))
   @Column(name = "authority", nullable = false)
   @Enumerated(EnumType.STRING)
   private final Set<Authority> authorities = new HashSet<>();
@@ -70,8 +76,8 @@ public class User {
    *          collection containing authorities to be added to this authorities
    *          collection
    */
-  public void addAllAuthority(Collection<Authority> authorities) {
-    this.authorities.addAll(authorities);
+  public void addAllAuthority(Authority... authorities) {
+    this.authorities.addAll(Arrays.asList(authorities));
   }
 
   /**
@@ -83,5 +89,28 @@ public class User {
    */
   public void addAuthority(Authority authority) {
     authorities.add(authority);
+  }
+
+  /**
+   * This method accepts password in clear text and hashes it before storing it in
+   * password filed.
+   *
+   * @param password
+   *          Clear text password
+   */
+  public void setClearTextPassword(String password) {
+    log.debug("Encoding clear password");
+
+    this.password = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(password);
+  }
+
+  /**
+   * This method accepts hashed passwords. To set password with clear text use
+   * method {@link #setClearTextPassword}
+   *
+   * @param password
+   */
+  public void setPassword(String password) {
+    this.password = password;
   }
 }

@@ -4,7 +4,7 @@ import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.model.UserDto;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
-import com.mladen.cikara.oauth2.resource.server.controller.EmailAlreadyRegisterd;
+import com.mladen.cikara.oauth2.resource.server.controller.EmailAlreadyRegisterdException;
 import com.mladen.cikara.oauth2.resource.server.controller.PasswordsDontMatchException;
 
 import javax.validation.Valid;
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
   private void validateEmailDoesntExist(String email) {
     if (userRepository.findByEmail(email).isPresent()) {
-      throw new EmailAlreadyRegisterd();
+      throw new EmailAlreadyRegisterdException();
     }
   }
 

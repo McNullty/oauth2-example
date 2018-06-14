@@ -11,6 +11,10 @@ WARNING: New JWT token has to be retrieved after every restart of the server.
 docker run -it --rm --name oauth2-postgres -p 5432:5432 -e POSTGRES_USER=oauth2 -e POSTGRES_PASSWORD=oauth2 postgres
 ```
 
+## Quality control
+
+You can run `./mvnw clean generate-sources verify` and read site that was created targe/site directory.
+
 ## TODO
 - [x] Add tests for /public, /private and /actuator/health end points
 - [x] Configure server to work only with HTTPS protocol

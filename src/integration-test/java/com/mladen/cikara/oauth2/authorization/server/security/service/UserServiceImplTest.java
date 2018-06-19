@@ -39,12 +39,14 @@ public class UserServiceImplTest {
 
   @Test
   public void whenSavingUser_thenUserIsAssignedRoleUser() {
-    final UserDto userDto = new UserDto();
-    userDto.setEmail("test@test.com");
-    userDto.setFirstName("testFirstName");
-    userDto.setLastName("testLastName");
-    userDto.setPassword("password");
-    userDto.setPasswordConfirmation("password");
+
+    final UserDto userDto = new UserDto.Builder()
+        .email("test@test.com")
+        .firstName("testFirstName")
+        .lastName("testLastName")
+        .password("password")
+        .passwordConfirmation("password")
+        .build();
 
     final User createdUser = userService.registerUser(userDto);
 

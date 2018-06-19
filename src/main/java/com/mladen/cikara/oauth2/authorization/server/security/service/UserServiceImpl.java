@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
   }
 
   private User convertToEntity(UserDto userDto) {
-    return modelMapper.map(userDto, User.class);
+    return modelMapper.map(userDto, User.Builder.class).build();
   }
 
   @Override

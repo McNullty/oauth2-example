@@ -11,13 +11,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ModelMapperConfig {
 
-  private PropertyMap<UserDto, User> getUserDtoToUserPropertyMap() {
-    final PropertyMap<UserDto, User> userMap = new PropertyMap<UserDto, User>() {
+  private PropertyMap<UserDto, User.Builder> getUserDtoToUserPropertyMap() {
+    final PropertyMap<UserDto, User.Builder> userMap = new PropertyMap<UserDto, User.Builder>() {
 
       @Override
       protected void configure() {
-        map().setClearTextPassword(source.getPassword());
-        skip().setPassword(null);
+        map().email(source.getEmail());
+        map().firstName(source.getFirstName());
+        map().lastName(source.getLastName());
+        map().password(source.getPassword());
       }
     };
 

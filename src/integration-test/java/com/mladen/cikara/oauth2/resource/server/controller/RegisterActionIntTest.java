@@ -115,7 +115,7 @@ public class RegisterActionIntTest {
   }
 
   @Test
-  public void whenPostCorrectUserDataWithouthdPasswordsMatching_thenBadRequest() throws Exception {
+  public void whenPostCorrectUserDataWithouthMatchingPasswords_thenBadRequest() throws Exception {
     final JSONObject jsonObj =
         new JSONObject()
             .put("email", "test@test.org")

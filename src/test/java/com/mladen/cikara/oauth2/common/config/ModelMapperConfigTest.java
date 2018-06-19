@@ -13,14 +13,15 @@ public class ModelMapperConfigTest {
   public void testMappingValidUserDto() {
     final ModelMapperConfig modelMapperConfig = new ModelMapperConfig();
 
-    final UserDto userDto = new UserDto();
-    userDto.setEmail("test@test.com");
-    userDto.setFirstName("Test");
-    userDto.setLastName("Testowski");
-    userDto.setPassword("secret");
-    userDto.setPasswordConfirmation("secret");
+    final UserDto userDto = new UserDto.Builder()
+        .email("test@test.com")
+        .firstName("Test")
+        .lastName("Testowski")
+        .password("secret")
+        .passwordConfirmation("secret")
+        .build();
 
-    final User user = modelMapperConfig.modelMapper().map(userDto, User.class);
+    final User user = modelMapperConfig.modelMapper().map(userDto, User.Builder.class).build();
 
     assertThat(user)
         .extracting("email", "firstName", "lastName")

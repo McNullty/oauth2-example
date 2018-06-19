@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.stereotype.Component;
 
 @Priority(value = 0)
@@ -35,15 +34,12 @@ public class InitializeUsers implements ApplicationRunner {
   private void insertUser(String email, String password, String firstName, String lastName,
       Collection<Authority> authorities) {
 
-    final User user = new User();
-    user.setEmail(email);
-    user.setPassword(
-        PasswordEncoderFactories
-            .createDelegatingPasswordEncoder()
-            .encode(password));
-    user.setFirstName(firstName);
-    user.setLastName(lastName);
-    user.addAllAuthority(authorities.toArray(new Authority[0]));
+    final User user = new User.Builder()
+        .email(email)
+        .password(password)
+        .firstName(firstName)
+        .lastName(lastName)
+        .authorities(authorities.toArray(new Authority[0])).build();
 
     userRepository.save(user);
 

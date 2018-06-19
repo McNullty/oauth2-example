@@ -1,35 +1,161 @@
 package com.mladen.cikara.oauth2.authorization.server.security.model;
 
+import com.mladen.cikara.oauth2.resource.server.controller.PasswordsDontMatchException;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import lombok.Data;
-import lombok.ToString;
-
-@Data
-@ToString(exclude = { "password", "passwordConfirmation" })
 public class UserDto {
+
+  public static class Builder {
+    private String email;
+    private String password;
+    private String passwordConfirmation;
+    private String firstName;
+    private String lastName;
+
+    public UserDto build() {
+      if (password == null || passwordConfirmation == null || password.isEmpty()
+          || passwordConfirmation.isEmpty() || !password.equals(passwordConfirmation)) {
+
+        throw new PasswordsDontMatchException();
+      }
+
+      return new UserDto(this);
+    }
+
+    public Builder email(String email) {
+      this.email = email;
+      return this;
+    }
+
+    public Builder firstName(String firstName) {
+      this.firstName = firstName;
+      return this;
+    }
+
+    public Builder lastName(String lastName) {
+      this.lastName = lastName;
+      return this;
+    }
+
+    /**
+     *
+     * @param password
+     *          Clear text password
+     * @return
+     */
+    public Builder password(String password) {
+      this.password = password;
+      return this;
+    }
+
+    /**
+     *
+     * @param password
+     *          Clear text password
+     * @return
+     */
+    public Builder passwordConfirmation(String password) {
+      passwordConfirmation = password;
+      return this;
+    }
+  }
 
   @Email
   @NotNull
-  private String email;
+  private final String email;
 
   @Size(max = 50)
   @NotBlank
-  private String firstName;
+  private final String firstName;
 
   @Size(max = 50)
   @NotBlank
-  private String lastName;
+  private final String lastName;
 
   @Size(max = 50)
   @NotBlank
-  private String password;
+  private final String password;
 
   @Size(max = 50)
   @NotBlank
-  private String passwordConfirmation;
+  private final String passwordConfirmation;
+
+  public UserDto(Builder builder) {
+    email = builder.email;
+    firstName = builder.firstName;
+    lastName = builder.lastName;
+    password = builder.password;
+    passwordConfirmation = builder.passwordConfirmation;
+  }
+
+  UserDto(@Email @NotNull String email, @Size(max = 50) @NotBlank String firstName,
+      @Size(max = 50) @NotBlank String lastName, @Size(max = 50) @NotBlank String password,
+      @Size(max = 50) @NotBlank String passwordConfirmation) {
+    super();
+    this.email = email;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.password = password;
+    this.passwordConfirmation = passwordConfirmation;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final UserDto other = (UserDto) obj;
+    if (email == null) {
+      if (other.email != null) {
+        return false;
+      }
+    } else if (!email.equals(other.email)) {
+      return false;
+    }
+    return true;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public String getLastName() {
+    return lastName;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public String getPasswordConfirmation() {
+    return passwordConfirmation;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((email == null) ? 0 : email.hashCode());
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "UserDto [email=" + email + ", firstName=" + firstName + ", lastName=" + lastName + "]";
+  }
 
 }

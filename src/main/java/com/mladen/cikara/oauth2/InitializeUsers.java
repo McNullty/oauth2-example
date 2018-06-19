@@ -34,14 +34,14 @@ public class InitializeUsers implements ApplicationRunner {
   private void insertUser(String email, String password, String firstName, String lastName,
       Collection<Authority> authorities) {
 
-    final User user = new User.Builder()
+    User user = new User.Builder()
         .email(email)
         .password(password)
         .firstName(firstName)
         .lastName(lastName)
         .authorities(authorities.toArray(new Authority[0])).build();
 
-    userRepository.save(user);
+    user = userRepository.save(user);
 
     logger.debug("Inserted user : {}", user);
   }

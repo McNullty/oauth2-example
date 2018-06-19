@@ -15,6 +15,10 @@ docker run -it --rm --name oauth2-postgres -p 5432:5432 -e POSTGRES_USER=oauth2 
 
 You can run `./mvnw clean generate-sources verify` and read site that was created targe/site directory.
 
+## Checking Hibernate schema creation
+
+You need to comment out flyway dependency in pom.xml, and uncomment `hibernate.ddl-auto: create` in application.yml.  
+
 ## TODO
 - [x] Add tests for /public, /private and /actuator/health end points
 - [x] Configure server to work only with HTTPS protocol

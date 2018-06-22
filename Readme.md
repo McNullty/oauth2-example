@@ -21,6 +21,18 @@ You can run `./mvnw clean generate-sources verify` and read site that was create
 
 Report will be created with `/mvnw site`
 
+### PMD 
+
+Report will be created with `/mvnw site`
+
+### Checkstyle
+
+Report will be created with `/mvnw site`
+
+### Error Prone
+
+Compile task will fail if errors are found
+
 ## Checking Hibernate schema creation
 
 You need to comment out flyway dependency in pom.xml, and uncomment `hibernate.ddl-auto: create` in application.yml.  

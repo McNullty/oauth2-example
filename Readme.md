@@ -13,7 +13,13 @@ docker run -it --rm --name oauth2-postgres -p 5432:5432 -e POSTGRES_USER=oauth2 
 
 ## Quality control
 
+### Jacoco test coverage 
+
 You can run `./mvnw clean generate-sources verify` and read site that was created targe/site directory.
+
+### Find Bugs
+
+Report will be created with `/mvnw site`
 
 ## Checking Hibernate schema creation
 

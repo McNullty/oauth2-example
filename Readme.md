@@ -11,6 +11,12 @@ WARNING: New JWT token has to be retrieved after every restart of the server.
 docker run -it --rm --name oauth2-postgres -p 5432:5432 -e POSTGRES_USER=oauth2 -e POSTGRES_PASSWORD=oauth2 postgres
 ```
 
+## Testing
+
+### Testing controllers
+
+When writing unit tests you should follow examples in this [document}(https://spring.io/guides/gs/testing-web/)
+
 ## Quality control
 
 ### Jacoco test coverage 

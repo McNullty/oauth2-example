@@ -1,6 +1,7 @@
 logging:
   level:
     com.mladen.cikara.oauth2: debug
+    org.springfremework: info
 
 management:
   endpoints:

@@ -24,7 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DirtiesContext
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class UserServiceImplTest {
+public class UserServiceImplIntTest {
 
   @ClassRule
   public static DockerComposeRule docker = DockerComposeRuleUtil.getDockerComposeRule();

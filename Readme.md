@@ -11,6 +11,14 @@ WARNING: New JWT token has to be retrieved after every restart of the server.
 docker run -it --rm --name oauth2-postgres -p 5432:5432 -e POSTGRES_USER=oauth2 -e POSTGRES_PASSWORD=oauth2 postgres
 ```
 
+## Testing
+
+### Testing controllers
+
+When writing unit tests you should follow examples in this [web page](https://spring.io/guides/gs/testing-web/).  For mocking spring security there is this [web page](https://docs.spring.io/spring-security/site/docs/4.0.x/reference/htmlsingle/#test)
+
+Services and repositories should be tested with unit tests and REST controllers should be tested with integration tests. 
+
 ## Quality control
 
 ### Jacoco test coverage 

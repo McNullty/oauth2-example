@@ -52,7 +52,4 @@ public class UserServiceImplIntTest {
 
     assertThat(createdUser.getAuthorities()).contains(Authority.ROLE_USER);
   }
-
-  // TODO: Add all the rest of assertions about Registering user
-
 }

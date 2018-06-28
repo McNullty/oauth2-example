@@ -10,7 +10,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /**
- * Builder for creating requet to get JWD token from OAuth2 Autorization server.
+ * Builder for creating request to get JWD token from OAuth2 Autorization
+ * server.
  *
  * @author Mladen Čikara <mladen.cikara@gmail.com>
  *

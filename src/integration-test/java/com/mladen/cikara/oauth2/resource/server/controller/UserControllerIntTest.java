@@ -1,6 +1,7 @@
 package com.mladen.cikara.oauth2.resource.server.controller;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,6 +45,14 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class UserControllerIntTest {
 
+  private static final String PASSWORD = "secret";
+
+  private static final String LAST_NAME = "testLastName";
+
+  private static final String FIRST_NAME = "testFirstName";
+
+  private static final String EMAIL = "test@oauth2.com";
+
   private static final Logger logger = LoggerFactory.getLogger(UserControllerIntTest.class);
 
   @ClassRule
@@ -62,11 +71,11 @@ public class UserControllerIntTest {
 
   private void createNewUser() {
     final RegisterUserDto userDto = new RegisterUserDto.Builder()
-        .email("test@oauth2.com")
-        .firstName("testFirstName")
-        .lastName("testLastName")
-        .password("secret")
-        .passwordConfirmation("secret")
+        .email(EMAIL)
+        .firstName(FIRST_NAME)
+        .lastName(LAST_NAME)
+        .password(PASSWORD)
+        .passwordConfirmation(PASSWORD)
         .build();
 
     userService.registerUser(userDto);
@@ -79,8 +88,8 @@ public class UserControllerIntTest {
           .oauth2Request(mockMvc)
           .grantType("password")
           .accessTokenUrl("/oauth/token")
-          .username("test@oauth2.com")
-          .password("secret")
+          .username(EMAIL)
+          .password(PASSWORD)
           .clientId("d4486b29-7f28-43db-8d4e-44df6b5785c9")
           .clientSecret("a6f59937-fc55-485c-bf91-c8bcdaae2e45")
           .scope("web")
@@ -116,6 +125,9 @@ public class UserControllerIntTest {
         .then()
           .log().all()
           .statusCode(HttpStatus.OK.value())
+          .body("user.email", equalTo(EMAIL))
+          .body("user.firstName", equalTo(FIRST_NAME))
+          .body("user.lastName", equalTo(LAST_NAME))
           .extract().response()
           // TODO: add more assertions
           .mvcResult();

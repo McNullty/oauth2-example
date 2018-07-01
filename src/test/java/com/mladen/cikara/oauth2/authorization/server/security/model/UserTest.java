@@ -16,6 +16,7 @@ public class UserTest {
         .authorities(Authority.ROLE_USER).build();
 
     assertThat(user.getUUID()).isNotNull();
+    assertThat(user.getAuthorities()).isNotEmpty();
   }
 
 }

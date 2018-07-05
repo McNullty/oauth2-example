@@ -9,8 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.mladen.cikara.oauth2.authorization.server.security.model.User;
+import com.mladen.cikara.oauth2.authorization.server.security.service.AuthorizationsUtilService;
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
-import com.mladen.cikara.oauth2.util.OAuth2AuthorizationBuilder;
 import com.palantir.docker.compose.DockerComposeRule;
 
 import org.junit.BeforeClass;
@@ -35,10 +36,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TestControllerWithMockMvcIntTest {
 
-  private static final String PASSWORD = "secret";
-
-  private static final String USERNAME = "user@oauth2.com";
-
   private static final Logger logger =
       LoggerFactory.getLogger(TestControllerWithMockMvcIntTest.class);
 
@@ -53,20 +50,13 @@ public class TestControllerWithMockMvcIntTest {
   @Autowired
   private MockMvc mockMvc;
 
+  @Autowired
+  private AuthorizationsUtilService authorizationsUtilService;
+
   private String getJwt() throws Exception {
-    // @formatter:off
-		final String jwt =
-		    OAuth2AuthorizationBuilder
-		      .oauth2Request(mockMvc)
-		      .grantType("password")
-		      .accessTokenUrl("/oauth/token")
-		      .username(USERNAME)
-		      .password(PASSWORD)
-		      .clientId("d4486b29-7f28-43db-8d4e-44df6b5785c9")
-		      .clientSecret("a6f59937-fc55-485c-bf91-c8bcdaae2e45")
-		      .scope("bla")
-		      .getAccessToken();
-		// @formatter:on
+    final User user = authorizationsUtilService.getBasicUser();
+
+    final String jwt = authorizationsUtilService.getAuthorizationJWT(user);
 
     return jwt;
   }

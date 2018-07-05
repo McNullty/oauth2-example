@@ -6,11 +6,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
-import com.mladen.cikara.oauth2.authorization.server.security.service.UserService;
+import com.mladen.cikara.oauth2.authorization.server.security.service.AuthorizationsUtilService;
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
-import com.mladen.cikara.oauth2.util.OAuth2AuthorizationBuilder;
 import com.palantir.docker.compose.DockerComposeRule;
 
 import org.junit.Before;
@@ -36,7 +35,7 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 /**
  * This integration test tests all user end points
  *
- * @author mladen
+ * @author Mladen Čikara mladen.cikara@gmail.com
  *
  */
 @ActiveProfiles("test")
@@ -45,14 +44,6 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class UserControllerIntTest {
-
-  private static final String PASSWORD = "secret";
-
-  private static final String LAST_NAME = "testLastName";
-
-  private static final String FIRST_NAME = "testFirstName";
-
-  private static final String EMAIL = "test@oauth2.com";
 
   private static final Logger logger = LoggerFactory.getLogger(UserControllerIntTest.class);
 
@@ -68,36 +59,14 @@ public class UserControllerIntTest {
   private MockMvc mockMvc;
 
   @Autowired
-  private UserService userService;
+  private AuthorizationsUtilService authorizationsUtilService;
 
   private User createNewUser() {
-    final RegisterUserDto userDto = new RegisterUserDto.Builder()
-        .email(EMAIL)
-        .firstName(FIRST_NAME)
-        .lastName(LAST_NAME)
-        .password(PASSWORD)
-        .passwordConfirmation(PASSWORD)
-        .build();
-
-    return userService.registerUser(userDto);
+    return authorizationsUtilService.createTempUserWithAuthorities(Authority.ROLE_USER);
   }
 
-  private String getAuthorization() throws Exception {
-    // @formatter:off
-    final String jwt =
-        OAuth2AuthorizationBuilder
-          .oauth2Request(mockMvc)
-          .grantType("password")
-          .accessTokenUrl("/oauth/token")
-          .username(EMAIL)
-          .password(PASSWORD)
-          .clientId("d4486b29-7f28-43db-8d4e-44df6b5785c9")
-          .clientSecret("a6f59937-fc55-485c-bf91-c8bcdaae2e45")
-          .scope("web")
-          .getAccessToken();
-    // @formatter:on
-
-    return jwt;
+  private String getAuthorization(User user) throws Exception {
+    return authorizationsUtilService.getAuthorizationJWT(user);
   }
 
   @Before
@@ -112,7 +81,7 @@ public class UserControllerIntTest {
 
     final User user = createNewUser();
 
-    final String jwt = getAuthorization();
+    final String jwt = getAuthorization(user);
 
     logger.debug("Got authorization: {}", jwt);
 
@@ -126,12 +95,11 @@ public class UserControllerIntTest {
         .then()
           .log().all()
           .statusCode(HttpStatus.OK.value())
-          .body("email", equalTo(EMAIL))
-          .body("firstName", equalTo(FIRST_NAME))
-          .body("lastName", equalTo(LAST_NAME))
+          .body("email", equalTo(user.getEmail()))
+          .body("firstName", equalTo(user.getFirstName()))
+          .body("lastName", equalTo(user.getLastName()))
           .body("uuid", equalTo(user.getUUID().toString()))
           .extract().response()
-          // TODO: add more assertions
           .mvcResult();
     // @formatter:on
 

@@ -99,6 +99,7 @@ public class UserControllerIntTest {
           .body("firstName", equalTo(user.getFirstName()))
           .body("lastName", equalTo(user.getLastName()))
           .body("uuid", equalTo(user.getUUID().toString()))
+          .body("_links.self.href", equalTo("http://localhost/user/" + user.getUUID().toString()))
           .extract().response()
           .mvcResult();
     // @formatter:on
@@ -138,6 +139,7 @@ public class UserControllerIntTest {
           .body("firstName", equalTo(tempUser.getFirstName()))
           .body("lastName", equalTo(tempUser.getLastName()))
           .body("uuid", equalTo(tempUser.getUUID().toString()))
+          .body("_links.self.href", equalTo("http://localhost/user/" + tempUser.getUUID().toString()))
           .extract().response()
           .mvcResult();
     // @formatter:on
@@ -194,6 +196,7 @@ public class UserControllerIntTest {
           .body("firstName", equalTo(user.getFirstName()))
           .body("lastName", equalTo(user.getLastName()))
           .body("uuid", equalTo(user.getUUID().toString()))
+          .body("_links.self.href", equalTo("http://localhost/user/" + user.getUUID().toString()))
           .extract().response()
           .mvcResult();
     // @formatter:on

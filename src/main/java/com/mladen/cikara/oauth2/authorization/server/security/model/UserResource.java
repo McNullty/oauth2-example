@@ -1,8 +1,14 @@
 package com.mladen.cikara.oauth2.authorization.server.security.model;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
+import com.mladen.cikara.oauth2.resource.server.controller.UserController;
+
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
 /**
@@ -26,7 +32,11 @@ public class UserResource extends ResourceSupport {
     lastName = user.getLastName();
     authorities = user.getAuthorities();
 
-    // TODO: Add links
+    final Link selfLink =
+        linkTo(methodOn(UserController.class).getUser(user.getUUID().toString(), null))
+            .withSelfRel();
+
+    add(selfLink);
   }
 
   public Set<Authority> getAuthorities() {

@@ -39,7 +39,7 @@ public class AuthorizationsUtilService {
    */
   public User createTempUserWithAuthorities(Authority... authorities) {
     User user = new User.Builder()
-        .email("temp.user@oauth2.com")
+        .email("temp.user." + System.currentTimeMillis() + "@oauth2.com")
         .password(PASSWORD)
         .firstName("Temp")
         .lastName("User")

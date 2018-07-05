@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
-import com.mladen.cikara.oauth2.authorization.server.security.model.UserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
 import com.mladen.cikara.oauth2.authorization.server.security.service.UserService;
 
 import org.json.JSONObject;
@@ -49,7 +49,7 @@ public class RegisterActionTest {
   @WithMockUser
   public void whenPostCorrectUserDataWithConfirmedPassword_thenCreated() throws Exception {
 
-    when(userServiceMock.registerUser(any(UserDto.class)))
+    when(userServiceMock.registerUser(any(RegisterUserDto.class)))
         .thenReturn(new User.Builder().password("password").build());
 
     final JSONObject jsonObj =

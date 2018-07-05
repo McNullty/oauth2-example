@@ -2,18 +2,18 @@ package com.mladen.cikara.oauth2.common.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
-import com.mladen.cikara.oauth2.authorization.server.security.model.UserDto;
 
 import org.junit.Test;
 
 public class ModelMapperConfigTest {
 
   @Test
-  public void testMappingValidUserDto() {
+  public void testMappingValidRegisterUserDto() {
     final ModelMapperConfig modelMapperConfig = new ModelMapperConfig();
 
-    final UserDto userDto = new UserDto.Builder()
+    final RegisterUserDto registerUserDto = new RegisterUserDto.Builder()
         .email("test@test.com")
         .firstName("Test")
         .lastName("Testowski")
@@ -21,7 +21,7 @@ public class ModelMapperConfigTest {
         .passwordConfirmation("secret")
         .build();
 
-    final User user = modelMapperConfig.modelMapper().map(userDto, User.Builder.class).build();
+    final User user = modelMapperConfig.modelMapper().map(registerUserDto, User.Builder.class).build();
 
     assertThat(user)
         .extracting("email", "firstName", "lastName")

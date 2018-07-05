@@ -118,7 +118,7 @@ public class User {
   @JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id"))
   @Column(name = "authority", nullable = false)
   @Enumerated(EnumType.STRING)
-  private final Set<Authority> authorities = new HashSet<>();
+  private Set<Authority> authorities;
 
   @SuppressWarnings("unused") // this method is used by JPA
   private User() {
@@ -130,6 +130,7 @@ public class User {
     email = builder.email;
     firstName = builder.firstName;
     lastName = builder.lastName;
+    authorities = builder.authorities;
 
     uuid = UUID.randomUUID();
 

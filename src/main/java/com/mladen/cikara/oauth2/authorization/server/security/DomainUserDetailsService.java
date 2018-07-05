@@ -1,5 +1,6 @@
 package com.mladen.cikara.oauth2.authorization.server.security;
 
+import com.mladen.cikara.oauth2.authorization.server.security.model.SpringSecurityUserAdapter;
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
 
@@ -23,11 +24,10 @@ public class DomainUserDetailsService implements UserDetailsService {
   @Autowired
   private UserRepository userRepository;
 
-  private org.springframework.security.core.userdetails.User createSpringSecurityUser(User user) {
+  private UserDetails createSpringSecurityUser(User user) {
 
-    final org.springframework.security.core.userdetails.User userDetails =
-        new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
-            user.getAuthorities());
+    final SpringSecurityUserAdapter userDetails =
+        new SpringSecurityUserAdapter(user);
 
     return userDetails;
   }

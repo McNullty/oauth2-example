@@ -4,9 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
-import com.mladen.cikara.oauth2.authorization.server.security.model.UserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
 import com.palantir.docker.compose.DockerComposeRule;
+
+import java.util.Optional;
 
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -37,10 +40,13 @@ public class UserServiceImplIntTest {
   @Autowired
   private UserService userService;
 
+  @Autowired
+  private UserRepository userRepository;
+
   @Test
   public void whenSavingUser_thenUserIsAssignedRoleUser() {
 
-    final UserDto userDto = new UserDto.Builder()
+    final RegisterUserDto userDto = new RegisterUserDto.Builder()
         .email("test@test.com")
         .firstName("testFirstName")
         .lastName("testLastName")
@@ -48,11 +54,10 @@ public class UserServiceImplIntTest {
         .passwordConfirmation("password")
         .build();
 
-    final User createdUser = userService.registerUser(userDto);
+    userService.registerUser(userDto);
 
-    assertThat(createdUser.getAuthorities()).contains(Authority.ROLE_USER);
+    final Optional<User> createdUser = userRepository.findByEmail("test@test.com");
+
+    assertThat(createdUser.get().getAuthorities()).contains(Authority.ROLE_USER);
   }
-
-  // TODO: Add all the rest of assertions about Registering user
-
 }

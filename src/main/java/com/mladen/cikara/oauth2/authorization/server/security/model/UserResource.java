@@ -1,50 +1,52 @@
 package com.mladen.cikara.oauth2.authorization.server.security.model;
 
+import java.util.Set;
+import java.util.UUID;
+
 import org.springframework.hateoas.ResourceSupport;
 
+/**
+ * This is object that will be returned by REST API
+ *
+ * @author Mladen Čikara mladen.cikara@gmail.com
+ *
+ */
 public class UserResource extends ResourceSupport {
 
-  private final User user;
+  private final String email;
+  private final UUID uuid;
+  private final String firstName;
+  private final String lastName;
+  private final Set<Authority> authorities;
 
   public UserResource(User user) {
-    this.user = user;
+    email = user.getEmail();
+    uuid = user.getUUID();
+    firstName = user.getFirstName();
+    lastName = user.getLastName();
+    authorities = user.getAuthorities();
 
-    // TODO: Add link to list of users
-    // TODO: Add link to user
-    // this.add(linkTo());
+    // TODO: Add links
   }
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (!super.equals(obj)) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final UserResource other = (UserResource) obj;
-    if (user == null) {
-      if (other.user != null) {
-        return false;
-      }
-    } else if (!user.equals(other.user)) {
-      return false;
-    }
-    return true;
+  public Set<Authority> getAuthorities() {
+    return authorities;
   }
 
-  public User getUser() {
-    return user;
+  public String getEmail() {
+    return email;
   }
 
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((user == null) ? 0 : user.hashCode());
-    return result;
+  public String getFirstName() {
+    return firstName;
   }
+
+  public String getLastName() {
+    return lastName;
+  }
+
+  public UUID getUuid() {
+    return uuid;
+  }
+
 }

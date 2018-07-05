@@ -1,7 +1,7 @@
 package com.mladen.cikara.oauth2.resource.server.controller;
 
-import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.model.UserResource;
 import com.mladen.cikara.oauth2.authorization.server.security.service.UserService;
 
@@ -37,9 +37,11 @@ public class RegisterAction {
 
     logger.trace("Registered user: {}", newUser);
 
-    // TODO: Add link to me
     final UserResource userResource = new UserResource(newUser);
 
+    // TODO: Add link to me
+    // final UserResource userResource = new UserResource(newUserDto);
+    //
     final URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
         .buildAndExpand(userResource.getId()).toUri();
 

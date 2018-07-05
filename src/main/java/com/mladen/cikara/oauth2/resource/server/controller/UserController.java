@@ -7,6 +7,7 @@ import com.mladen.cikara.oauth2.authorization.server.security.model.UserResource
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +82,7 @@ public class UserController {
     }
 
     if (checkUserHasAdminRole(currentUser)) {
-      final Optional<User> user = userRepository.findByUuid(uuid);
+      final Optional<User> user = userRepository.findByUuid(UUID.fromString(uuid));
 
       if (user.isPresent()) {
         return createResponseEntityFromUser(user.get());

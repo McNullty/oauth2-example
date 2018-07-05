@@ -115,4 +115,35 @@ public class UserControllerIntTest {
         .andExpect(status().isUnauthorized());
     // @formatter:on
   }
+
+  @Test
+  public void whenGetWithUUIDOfCurrentUser_ThenOK() throws Exception {
+    final User user = createNewUser();
+
+    final String jwt = getAuthorization(user);
+
+    logger.debug("Got authorization: {}", jwt);
+
+    final String urlPath = "/user/" + user.getUUID().toString();
+
+    // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .log().all()
+        .when()
+          .get(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .body("email", equalTo(user.getEmail()))
+          .body("firstName", equalTo(user.getFirstName()))
+          .body("lastName", equalTo(user.getLastName()))
+          .body("uuid", equalTo(user.getUUID().toString()))
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
 }

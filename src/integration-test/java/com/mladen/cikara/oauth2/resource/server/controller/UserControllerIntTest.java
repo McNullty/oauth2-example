@@ -117,6 +117,60 @@ public class UserControllerIntTest {
   }
 
   @Test
+  public void whenGetWithExistingUUIDAndLogggedInWithAdmin_ThenOK() throws Exception {
+    final User tempUser = createNewUser();
+
+    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+
+    final String urlPath = "/user/" + tempUser.getUUID().toString();
+
+    // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .log().all()
+        .when()
+          .get(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .body("email", equalTo(tempUser.getEmail()))
+          .body("firstName", equalTo(tempUser.getFirstName()))
+          .body("lastName", equalTo(tempUser.getLastName()))
+          .body("uuid", equalTo(tempUser.getUUID().toString()))
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
+  public void whenGetWithExistingUUIDAndLogggedInWithBasicUser_ThenUnauthorized() throws Exception {
+    final User tempUser = createNewUser();
+
+    final String jwt = getAuthorization(authorizationsUtilService.getBasicUser());
+
+    final String urlPath = "/user/" + tempUser.getUUID().toString();
+
+    // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .log().all()
+        .when()
+          .get(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.UNAUTHORIZED.value())
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
   public void whenGetWithUUIDOfCurrentUser_ThenOK() throws Exception {
     final User user = createNewUser();
 

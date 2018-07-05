@@ -10,4 +10,6 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 public interface UserRepository extends JpaRepository<User, Long>, QuerydslPredicateExecutor<User> {
 
   Optional<User> findByEmail(String email);
+
+  Optional<User> findByUuid(String uuid);
 }

@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
-import com.mladen.cikara.oauth2.authorization.server.security.model.UserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
 import com.palantir.docker.compose.DockerComposeRule;
@@ -46,7 +46,7 @@ public class UserServiceImplIntTest {
   @Test
   public void whenSavingUser_thenUserIsAssignedRoleUser() {
 
-    final UserDto userDto = new UserDto.Builder()
+    final RegisterUserDto userDto = new RegisterUserDto.Builder()
         .email("test@test.com")
         .firstName("testFirstName")
         .lastName("testLastName")

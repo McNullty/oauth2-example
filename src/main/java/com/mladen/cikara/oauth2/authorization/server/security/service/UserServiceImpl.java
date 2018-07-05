@@ -2,7 +2,7 @@ package com.mladen.cikara.oauth2.authorization.server.security.service;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
-import com.mladen.cikara.oauth2.authorization.server.security.model.UserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
 import com.mladen.cikara.oauth2.resource.server.controller.EmailAlreadyRegisterdException;
 import com.mladen.cikara.oauth2.resource.server.controller.PasswordsDontMatchException;
@@ -28,12 +28,12 @@ public class UserServiceImpl implements UserService {
     this.userRepository = userRepository;
   }
 
-  private User convertToEntity(UserDto userDto) {
+  private User convertToEntity(RegisterUserDto userDto) {
     return modelMapper.map(userDto, User.Builder.class).build();
   }
 
   @Override
-  public User registerUser(@Valid UserDto userDto) {
+  public User registerUser(@Valid RegisterUserDto userDto) {
 
     logger.trace("Got user DTO: {}", userDto);
 
@@ -54,13 +54,13 @@ public class UserServiceImpl implements UserService {
     }
   }
 
-  private void validatePasswords(UserDto userDto) {
+  private void validatePasswords(RegisterUserDto userDto) {
     if (!userDto.getPassword().equals(userDto.getPasswordConfirmation())) {
       throw new PasswordsDontMatchException();
     }
   }
 
-  private void verifyInputData(UserDto userDto) {
+  private void verifyInputData(RegisterUserDto userDto) {
     validatePasswords(userDto);
 
     validateEmailDoesntExist(userDto.getEmail());

@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-public class UserDto {
+public class RegisterUserDto {
 
   public static class Builder {
     private String email;
@@ -16,14 +16,14 @@ public class UserDto {
     private String firstName;
     private String lastName;
 
-    public UserDto build() {
+    public RegisterUserDto build() {
       if (password == null || passwordConfirmation == null || password.isEmpty()
           || passwordConfirmation.isEmpty() || !password.equals(passwordConfirmation)) {
 
         throw new PasswordsDontMatchException();
       }
 
-      return new UserDto(this);
+      return new RegisterUserDto(this);
     }
 
     public Builder email(String email) {
@@ -84,7 +84,7 @@ public class UserDto {
   @NotBlank
   private final String passwordConfirmation;
 
-  public UserDto(Builder builder) {
+  public RegisterUserDto(Builder builder) {
     email = builder.email;
     firstName = builder.firstName;
     lastName = builder.lastName;
@@ -92,7 +92,7 @@ public class UserDto {
     passwordConfirmation = builder.passwordConfirmation;
   }
 
-  UserDto(@Email @NotNull String email, @Size(max = 50) @NotBlank String firstName,
+  RegisterUserDto(@Email @NotNull String email, @Size(max = 50) @NotBlank String firstName,
       @Size(max = 50) @NotBlank String lastName, @Size(max = 50) @NotBlank String password,
       @Size(max = 50) @NotBlank String passwordConfirmation) {
     super();
@@ -114,7 +114,7 @@ public class UserDto {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final UserDto other = (UserDto) obj;
+    final RegisterUserDto other = (RegisterUserDto) obj;
     if (email == null) {
       if (other.email != null) {
         return false;

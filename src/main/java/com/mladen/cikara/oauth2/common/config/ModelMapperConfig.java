@@ -1,7 +1,7 @@
 package com.mladen.cikara.oauth2.common.config;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
-import com.mladen.cikara.oauth2.authorization.server.security.model.UserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ModelMapperConfig {
 
-  private PropertyMap<UserDto, User.Builder> getUserDtoToUserPropertyMap() {
-    final PropertyMap<UserDto, User.Builder> userMap = new PropertyMap<UserDto, User.Builder>() {
+  private PropertyMap<RegisterUserDto, User.Builder> getRegisterUserDtoToUserPropertyMap() {
+    final PropertyMap<RegisterUserDto, User.Builder> userMap = new PropertyMap<RegisterUserDto, User.Builder>() {
 
       @Override
       protected void configure() {
@@ -30,7 +30,7 @@ public class ModelMapperConfig {
   public ModelMapper modelMapper() {
     final ModelMapper modelMapper = new ModelMapper();
 
-    modelMapper.addMappings(getUserDtoToUserPropertyMap());
+    modelMapper.addMappings(getRegisterUserDtoToUserPropertyMap());
 
     return modelMapper;
   }

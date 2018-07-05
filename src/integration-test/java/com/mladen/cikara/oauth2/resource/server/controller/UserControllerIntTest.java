@@ -5,7 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.mladen.cikara.oauth2.authorization.server.security.model.UserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
 import com.mladen.cikara.oauth2.authorization.server.security.service.UserService;
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
 import com.mladen.cikara.oauth2.util.OAuth2AuthorizationBuilder;
@@ -61,7 +61,7 @@ public class UserControllerIntTest {
   private UserService userService;
 
   private void createNewUser() {
-    final UserDto userDto = new UserDto.Builder()
+    final RegisterUserDto userDto = new RegisterUserDto.Builder()
         .email("test@oauth2.com")
         .firstName("testFirstName")
         .lastName("testLastName")

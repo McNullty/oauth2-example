@@ -1,7 +1,7 @@
 package com.mladen.cikara.oauth2.resource.server.controller;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
-import com.mladen.cikara.oauth2.authorization.server.security.model.UserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
 import com.mladen.cikara.oauth2.authorization.server.security.model.UserResource;
 import com.mladen.cikara.oauth2.authorization.server.security.service.UserService;
 
@@ -29,7 +29,7 @@ public class RegisterAction {
   }
 
   @PostMapping("/register")
-  public ResponseEntity<?> registerUser(@Valid @RequestBody UserDto userDto) {
+  public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterUserDto userDto) {
 
     logger.trace("Got user DTO: {}", userDto);
 

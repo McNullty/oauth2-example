@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.service.UserService;
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
 import com.mladen.cikara.oauth2.util.OAuth2AuthorizationBuilder;
@@ -69,7 +70,7 @@ public class UserControllerIntTest {
   @Autowired
   private UserService userService;
 
-  private void createNewUser() {
+  private User createNewUser() {
     final RegisterUserDto userDto = new RegisterUserDto.Builder()
         .email(EMAIL)
         .firstName(FIRST_NAME)
@@ -78,7 +79,7 @@ public class UserControllerIntTest {
         .passwordConfirmation(PASSWORD)
         .build();
 
-    userService.registerUser(userDto);
+    return userService.registerUser(userDto);
   }
 
   private String getAuthorization() throws Exception {
@@ -109,7 +110,7 @@ public class UserControllerIntTest {
   @Test
   public void whenGetMeWhenLoggedIn_thenOK() throws Exception {
 
-    createNewUser();
+    final User user = createNewUser();
 
     final String jwt = getAuthorization();
 
@@ -125,9 +126,10 @@ public class UserControllerIntTest {
         .then()
           .log().all()
           .statusCode(HttpStatus.OK.value())
-          .body("user.email", equalTo(EMAIL))
-          .body("user.firstName", equalTo(FIRST_NAME))
-          .body("user.lastName", equalTo(LAST_NAME))
+          .body("email", equalTo(EMAIL))
+          .body("firstName", equalTo(FIRST_NAME))
+          .body("lastName", equalTo(LAST_NAME))
+          .body("uuid", equalTo(user.getUUID().toString()))
           .extract().response()
           // TODO: add more assertions
           .mvcResult();

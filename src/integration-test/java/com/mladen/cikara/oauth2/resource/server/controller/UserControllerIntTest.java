@@ -122,7 +122,7 @@ public class UserControllerIntTest {
           .header("Authorization", "Bearer " + jwt)
           .log().all()
         .when()
-          .get("/me")
+          .get("/user/current")
         .then()
           .log().all()
           .statusCode(HttpStatus.OK.value())
@@ -142,7 +142,7 @@ public class UserControllerIntTest {
   public void whenGetMeWithoutBeingLoggedIn_thenUnauthorized() throws Exception {
     // @formatter:off
     mockMvc
-      .perform(get("/me"))
+      .perform(get("/user/current"))
         .andDo(print())
         .andExpect(status().isUnauthorized());
     // @formatter:on

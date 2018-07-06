@@ -34,7 +34,7 @@ public class UserResource extends ResourceSupport {
 
     final Link selfLink =
         linkTo(methodOn(UserController.class).getUser(user.getUUID().toString(), null))
-            .withSelfRel();
+            .withSelfRel().withDeprecation("Direct access to user entity");
 
     add(selfLink);
   }

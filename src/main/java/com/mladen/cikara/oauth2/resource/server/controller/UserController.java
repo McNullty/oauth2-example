@@ -5,12 +5,18 @@ import com.mladen.cikara.oauth2.authorization.server.security.model.SpringSecuri
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.model.UserResource;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
+import com.mladen.cikara.oauth2.authorization.server.security.service.UserService;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,9 +32,11 @@ public class UserController {
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
   private final UserRepository userRepository;
+  private final UserService userService;
 
-  public UserController(UserRepository userRepository) {
+  public UserController(UserRepository userRepository, UserService userService) {
     this.userRepository = userRepository;
+    this.userService = userService;
   }
 
   /**
@@ -92,5 +100,29 @@ public class UserController {
     }
 
     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+  }
+
+  @GetMapping
+  public ResponseEntity<Page<UserResource>> getUsers(Pageable page,
+      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
+
+    logger.debug("Authentication principal: {}", currentUserAdaptor);
+
+    final Page<User> userPage = userService.findAllUsers(page);
+
+    logger.trace("Got page {}:", userPage);
+
+    final List<User> users = userPage.getContent();
+    final List<UserResource> userResources =
+        users.stream().map(user -> new UserResource(user)).collect(Collectors.toList());
+
+    logger.trace("Converted to UserResource {}:", userResources);
+
+    final Page<UserResource> userResourcePage =
+        new PageImpl<>(userResources, userPage.getPageable(), userPage.getTotalElements());
+
+    logger.trace("Converted to UserResourcePage {}:", userResourcePage);
+
+    return ResponseEntity.ok(userResourcePage);
   }
 }

@@ -1,8 +1,8 @@
 package com.mladen.cikara.oauth2.authorization.server.security.service;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
-import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
 import com.mladen.cikara.oauth2.resource.server.controller.EmailAlreadyRegisterdException;
 import com.mladen.cikara.oauth2.resource.server.controller.PasswordsDontMatchException;
@@ -12,6 +12,8 @@ import javax.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,6 +32,13 @@ public class UserServiceImpl implements UserService {
 
   private User convertToEntity(RegisterUserDto userDto) {
     return modelMapper.map(userDto, User.Builder.class).build();
+  }
+
+  @Override
+  public Page<User> findAllUsers(Pageable page) {
+    logger.trace("Got pagable: {}", page);
+
+    return userRepository.findAll(page);
   }
 
   @Override

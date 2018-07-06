@@ -108,6 +108,10 @@ public class UserController {
 
     logger.debug("Authentication principal: {}", currentUserAdaptor);
 
+    // TODO: check authority
+
+    // TODO: refactor code cleaning
+
     final Page<User> userPage = userService.findAllUsers(page);
 
     logger.trace("Got page {}:", userPage);

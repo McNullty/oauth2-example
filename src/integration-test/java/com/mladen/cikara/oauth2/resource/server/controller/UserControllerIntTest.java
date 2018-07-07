@@ -77,7 +77,7 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenGetMeWhenLoggedIn_thenOK() throws Exception {
+  public void whenGetCurrentUserWhenLoggedIn_thenOK() throws Exception {
 
     final User user = createNewUser();
 
@@ -108,7 +108,7 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenGetMeWithoutBeingLoggedIn_thenUnauthorized() throws Exception {
+  public void whenGetCurrentUserWithoutBeingLoggedIn_thenUnauthorized() throws Exception {
     // @formatter:off
     mockMvc
       .perform(get("/user/current"))
@@ -118,7 +118,24 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenGetWithExistingUUIDAndLogggedInWithAdmin_ThenOK() throws Exception {
+  public void whenGetUsersWithoutBeingLoggedIn_thenUnauthorized() throws Exception {
+    // @formatter:off
+    final MvcResult response =
+        given()
+          .log().all()
+        .when()
+          .get("/user")
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.UNAUTHORIZED.value())
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
+  public void whenGetUserWithExistingUUIDAndLogggedInWithAdmin_ThenOK() throws Exception {
     final User tempUser = createNewUser();
 
     final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
@@ -148,7 +165,8 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenGetWithExistingUUIDAndLogggedInWithBasicUser_ThenUnauthorized() throws Exception {
+  public void whenGetUserWithExistingUUIDAndLogggedInWithBasicUser_ThenUnauthorized()
+      throws Exception {
     final User tempUser = createNewUser();
 
     final String jwt = getAuthorization(authorizationsUtilService.getBasicUser());
@@ -173,7 +191,7 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenGetWithUUIDOfCurrentUser_ThenOK() throws Exception {
+  public void whenGetUserWithUUIDOfCurrentUser_ThenOK() throws Exception {
     final User user = createNewUser();
 
     final String jwt = getAuthorization(user);

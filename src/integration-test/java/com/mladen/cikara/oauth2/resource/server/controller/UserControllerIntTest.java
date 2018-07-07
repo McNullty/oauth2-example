@@ -135,6 +135,57 @@ public class UserControllerIntTest {
   }
 
   @Test
+  public void whenGetUserWhenLogggedInWithAdmin_ThenOK() throws Exception {
+    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+
+    final String urlPath = "/user";
+
+    // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .log().all()
+        .when()
+          .get(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
+  public void whenGetUserWhenLogggedInWithBasicUser_ThenOkWithOnlyOneUserInList()
+      throws Exception {
+    final User tempUser = createNewUser();
+
+    final String jwt = getAuthorization(tempUser);
+
+    final String urlPath = "/user";
+
+    // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .log().all()
+        .when()
+          .get(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .body("content[0].uuid", equalTo(tempUser.getUUID().toString()))
+          .body("totalElements", equalTo(1))
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
   public void whenGetUserWithExistingUUIDAndLogggedInWithAdmin_ThenOK() throws Exception {
     final User tempUser = createNewUser();
 

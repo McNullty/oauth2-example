@@ -7,6 +7,7 @@ import com.mladen.cikara.oauth2.authorization.server.security.model.UserResource
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
 import com.mladen.cikara.oauth2.authorization.server.security.service.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -63,6 +64,27 @@ public class UserController {
     return user.getAuthorities().contains(Authority.ROLE_ADMIN);
   }
 
+  private Page<UserResource> convertUserPageToUserResourcePage(final Page<User> userPage) {
+    final List<User> users = userPage.getContent();
+    final List<UserResource> userResources =
+        users.stream().map(user -> new UserResource(user)).collect(Collectors.toList());
+
+    logger.trace("Converted to UserResource {}:", userResources);
+
+    final Page<UserResource> userResourcePage =
+        new PageImpl<>(userResources, userPage.getPageable(), userPage.getTotalElements());
+    return userResourcePage;
+  }
+
+  private Page<UserResource> createPageWithOnlyCurrentUser(
+      SpringSecurityUserAdapter currentUserAdaptor) {
+    final List<UserResource> content = new ArrayList<>();
+    content.add(new UserResource(currentUserAdaptor.getUser()));
+
+    final Page<UserResource> userResourcePage = new PageImpl<>(content);
+    return userResourcePage;
+  }
+
   private ResponseEntity<UserResource> createResponseEntityFromUser(User user) {
     final UserResource userResource = new UserResource(user);
 
@@ -108,25 +130,23 @@ public class UserController {
 
     logger.debug("Authentication principal: {}", currentUserAdaptor);
 
-    // TODO: check authority
+    if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
 
-    // TODO: refactor code cleaning
+      final Page<User> userPage = userService.findAllUsers(page);
 
-    final Page<User> userPage = userService.findAllUsers(page);
+      logger.trace("Got page {}:", userPage);
 
-    logger.trace("Got page {}:", userPage);
+      final Page<UserResource> userResourcePage = convertUserPageToUserResourcePage(userPage);
 
-    final List<User> users = userPage.getContent();
-    final List<UserResource> userResources =
-        users.stream().map(user -> new UserResource(user)).collect(Collectors.toList());
+      logger.trace("Converted to UserResourcePage {}:", userResourcePage);
 
-    logger.trace("Converted to UserResource {}:", userResources);
+      return ResponseEntity.ok(userResourcePage);
+    } else {
+      final Page<UserResource> userResourcePage = createPageWithOnlyCurrentUser(currentUserAdaptor);
 
-    final Page<UserResource> userResourcePage =
-        new PageImpl<>(userResources, userPage.getPageable(), userPage.getTotalElements());
+      logger.trace("Created new page with only one user {}:", userResourcePage);
 
-    logger.trace("Converted to UserResourcePage {}:", userResourcePage);
-
-    return ResponseEntity.ok(userResourcePage);
+      return ResponseEntity.ok(userResourcePage);
+    }
   }
 }

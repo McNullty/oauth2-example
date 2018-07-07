@@ -242,6 +242,31 @@ public class UserControllerIntTest {
   }
 
   @Test
+  public void whenGetUserWithPageDefinedWhenLogggedInWithAdmin_ThenOK() throws Exception {
+    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+
+    final String urlPath = "/user?page=1&size=2";
+
+    // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .log().all()
+        .when()
+          .get(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .body("size", equalTo(2))
+          .body("pageable.pageSize", equalTo(2))
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
   public void whenGetUserWithUUIDOfCurrentUser_ThenOK() throws Exception {
     final User user = createNewUser();
 

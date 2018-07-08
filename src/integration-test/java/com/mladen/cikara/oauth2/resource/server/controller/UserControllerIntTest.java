@@ -1,7 +1,6 @@
 package com.mladen.cikara.oauth2.resource.server.controller;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -322,7 +321,31 @@ public class UserControllerIntTest {
 
     final String urlPath = "/user/" + tempUser.getUUID().toString();
 
-    fail("Not yet implemented!");
+    final String newFirstName = "newFirstName";
+    final String newLastName = "newLastName";
+    final String updateJsonObject = prepareUpdateJsonObject(newFirstName, newLastName);
+
+ // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .body(updateJsonObject)
+          .contentType("application/json")
+          .log().all()
+        .when()
+          .put(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .body("email", equalTo(tempUser.getEmail()))
+          .body("firstName", equalTo(newFirstName))
+          .body("lastName", equalTo(newLastName))
+          .body("uuid", equalTo(tempUser.getUUID().toString()))
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
   }
 
   @Test
@@ -333,7 +356,27 @@ public class UserControllerIntTest {
 
     final String urlPath = "/user/" + tempUser.getUUID().toString();
 
-    fail("Not yet implemented!");
+    final String newFirstName = "newFirstName";
+    final String newLastName = "newLastName";
+    final String updateJsonObject = prepareUpdateJsonObject(newFirstName, newLastName);
+
+ // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .body(updateJsonObject)
+          .contentType("application/json")
+          .log().all()
+        .when()
+          .put(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.UNAUTHORIZED.value())
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
   }
 
   @Test

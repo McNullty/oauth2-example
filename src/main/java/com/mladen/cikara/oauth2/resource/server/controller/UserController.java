@@ -174,6 +174,10 @@ public class UserController {
       return updateUser(uuid, userDto);
     }
 
-    return null;
+    if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
+      return updateUser(uuid, userDto);
+    }
+
+    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
   }
 }

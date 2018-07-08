@@ -5,8 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
-import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.service.UserService;
 
 import org.json.JSONObject;
@@ -60,10 +60,12 @@ public class RegisterActionTest {
             .put("password", "secret")
             .put("passwordConfirmation", "secret");
 
+    final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
+
     // @formatter:off
     final MvcResult response =
         given()
-          .body(jsonObj.toString())
+          .body(userJsonObj.toString())
           .contentType(ContentType.JSON)
           .log().all()
         .when()

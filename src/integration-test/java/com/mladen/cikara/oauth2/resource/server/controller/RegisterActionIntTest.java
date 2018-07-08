@@ -70,10 +70,12 @@ public class RegisterActionIntTest {
             .put("password", "secret")
             .put("passwordConfirmation", "secret");
 
+    final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
+
     // @formatter:off
 		final MvcResult response =
 		    given()
-		      .body(jsonObj.toString())
+		      .body(userJsonObj.toString())
 		      .contentType(ContentType.JSON)
 		      .log().all()
 	      .when()
@@ -97,10 +99,12 @@ public class RegisterActionIntTest {
             .put("password", "secret")
             .put("passwordConfirmation", "secret");
 
+    final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
+
     // @formatter:off
 		final MvcResult response =
 		    given()
-		      .body(jsonObj.toString())
+		      .body(userJsonObj.toString())
 		      .contentType(ContentType.JSON)
 		      .log().all()
 	      .when()
@@ -124,10 +128,12 @@ public class RegisterActionIntTest {
             .put("password", "secret")
             .put("passwordConfirmation", "terces");
 
+    final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
+
     // @formatter:off
 		final MvcResult response =
 		    given()
-		      .body(jsonObj.toString())
+		      .body(userJsonObj.toString())
 	        .contentType(ContentType.JSON)
 	        .log().all()
         .when()
@@ -151,10 +157,12 @@ public class RegisterActionIntTest {
             .put("password", "secret")
             .put("passwordConfirmation", "secret");
 
+    final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
+
     // @formatter:off
 		final MvcResult response =
 		    given()
-		      .body(jsonObj.toString())
+		      .body(userJsonObj.toString())
 		      .contentType(ContentType.JSON)
 		      .log().all()
 	      .when()
@@ -178,10 +186,12 @@ public class RegisterActionIntTest {
             .put("password", "secret")
             .put("passwordConfirmation", "secret");
 
+    final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
+
     // @formatter:off
 		final MvcResult response =
 		    given()
-		      .body(jsonObj.toString())
+		      .body(userJsonObj.toString())
 		      .contentType(ContentType.JSON)
 		      .log().all()
 	      .when()
@@ -204,10 +214,12 @@ public class RegisterActionIntTest {
             .put("password", "secret")
             .put("passwordConfirmation", "secret");
 
+    final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
+
     // @formatter:off
 		final MvcResult response =
 		    given()
-		      .body(jsonObj.toString())
+		      .body(userJsonObj.toString())
 	        .contentType(ContentType.JSON)
 	        .log().all()
         .when()

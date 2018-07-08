@@ -2,6 +2,7 @@ package com.mladen.cikara.oauth2.resource.server.controller;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
 import com.mladen.cikara.oauth2.authorization.server.security.model.SpringSecurityUserAdapter;
+import com.mladen.cikara.oauth2.authorization.server.security.model.UpdateUserDto;
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.model.UserResource;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
@@ -13,6 +14,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -23,6 +26,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -148,5 +153,27 @@ public class UserController {
 
       return ResponseEntity.ok(userResourcePage);
     }
+  }
+
+  private ResponseEntity<UserResource> updateUser(String uuid, @Valid UpdateUserDto userDto) {
+    final User updatedUser = userService.updateUser(uuid, userDto);
+
+    final UserResource updatedUserResource = new UserResource(updatedUser);
+
+    return ResponseEntity.ok(updatedUserResource);
+  }
+
+  @PutMapping(path = "/{uuid}")
+  public ResponseEntity<UserResource> updateUser(@PathVariable String uuid,
+      @Valid @RequestBody UpdateUserDto userDto,
+      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
+    logger.debug("Authentication principal: {}", currentUserAdaptor);
+    logger.debug("UpdateUserDto: {}", userDto);
+
+    if (checkIsUUIDFromCurrentUser(uuid, currentUserAdaptor.getUser())) {
+      return updateUser(uuid, userDto);
+    }
+
+    return null;
   }
 }

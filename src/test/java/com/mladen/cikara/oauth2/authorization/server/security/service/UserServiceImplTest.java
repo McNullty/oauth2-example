@@ -7,14 +7,16 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
-import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
 import com.mladen.cikara.oauth2.common.config.ModelMapperConfig;
 import com.mladen.cikara.oauth2.resource.server.controller.EmailAlreadyRegisterdException;
 import com.mladen.cikara.oauth2.resource.server.controller.PasswordsDontMatchException;
 
 import java.util.Optional;
+
+import javax.persistence.EntityManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +53,11 @@ public class UserServiceImplTest {
     final ModelMapperConfig modelMapperConfig = new ModelMapperConfig();
 
     userRepositoryMock = Mockito.mock(UserRepository.class);
-    userService = new UserServiceImpl(modelMapperConfig.modelMapper(), userRepositoryMock);
+
+    final EntityManager entityManager = Mockito.mock(EntityManager.class);
+
+    userService =
+        new UserServiceImpl(modelMapperConfig.modelMapper(), userRepositoryMock, entityManager);
   }
 
   @Test(expected = EmailAlreadyRegisterdException.class)

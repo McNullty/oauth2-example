@@ -12,6 +12,8 @@ import com.mladen.cikara.oauth2.authorization.server.security.service.Authorizat
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
 import com.palantir.docker.compose.DockerComposeRule;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -67,6 +69,19 @@ public class UserControllerIntTest {
 
   private String getAuthorization(User user) throws Exception {
     return authorizationsUtilService.getAuthorizationJWT(user);
+  }
+
+  private String prepareUpdateJsonObject(final String firstName,
+      final String lastName) throws JSONException {
+
+    final JSONObject jsonObj =
+        new JSONObject()
+            .put("firstName", firstName)
+            .put("lastName", lastName);
+
+    final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
+
+    return userJsonObj.toString();
   }
 
   @Before
@@ -291,6 +306,107 @@ public class UserControllerIntTest {
           .body("lastName", equalTo(user.getLastName()))
           .body("uuid", equalTo(user.getUUID().toString()))
           .body("_links.self.href", equalTo("http://localhost/user/" + user.getUUID().toString()))
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
+  public void whenPutUserWithUUIDAndLoggedInAsAdminUser_thenOK() throws Exception {
+    final User tempUser = createNewUser();
+
+    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+
+    final String urlPath = "/user/" + tempUser.getUUID().toString();
+
+    final String newFirstName = "newFirstName";
+    final String newLastName = "newLastName";
+    final String updateJsonObject = prepareUpdateJsonObject(newFirstName, newLastName);
+
+ // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .body(updateJsonObject)
+          .contentType("application/json")
+          .log().all()
+        .when()
+          .put(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .body("email", equalTo(tempUser.getEmail()))
+          .body("firstName", equalTo(newFirstName))
+          .body("lastName", equalTo(newLastName))
+          .body("uuid", equalTo(tempUser.getUUID().toString()))
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
+  public void whenPutUserWithUUIDAndLoggedInAsBasicUser_thenUnauthorized() throws Exception {
+    final User tempUser = createNewUser();
+
+    final String jwt = getAuthorization(authorizationsUtilService.getBasicUser());
+
+    final String urlPath = "/user/" + tempUser.getUUID().toString();
+
+    final String newFirstName = "newFirstName";
+    final String newLastName = "newLastName";
+    final String updateJsonObject = prepareUpdateJsonObject(newFirstName, newLastName);
+
+ // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .body(updateJsonObject)
+          .contentType("application/json")
+          .log().all()
+        .when()
+          .put(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.UNAUTHORIZED.value())
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
+  public void whenPutUserWithUUIDOfCurrentUser_thenOK() throws Exception {
+    final User tempUser = createNewUser();
+
+    final String jwt = getAuthorization(tempUser);
+
+    final String urlPath = "/user/" + tempUser.getUUID().toString();
+
+    final String newFirstName = "newFirstName";
+    final String newLastName = "newLastName";
+    final String updateJsonObject = prepareUpdateJsonObject(newFirstName, newLastName);
+
+ // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .body(updateJsonObject)
+          .contentType("application/json")
+          .log().all()
+        .when()
+          .put(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .body("email", equalTo(tempUser.getEmail()))
+          .body("firstName", equalTo(newFirstName))
+          .body("lastName", equalTo(newLastName))
+          .body("uuid", equalTo(tempUser.getUUID().toString()))
           .extract().response()
           .mvcResult();
     // @formatter:on

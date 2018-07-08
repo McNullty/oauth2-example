@@ -1,12 +1,18 @@
 package com.mladen.cikara.oauth2.authorization.server.security.service;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
+import com.mladen.cikara.oauth2.authorization.server.security.model.QUser;
 import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.UpdateUserDto;
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
 import com.mladen.cikara.oauth2.resource.server.controller.EmailAlreadyRegisterdException;
 import com.mladen.cikara.oauth2.resource.server.controller.PasswordsDontMatchException;
+import com.querydsl.jpa.impl.JPAUpdateClause;
 
+import java.util.UUID;
+
+import javax.persistence.EntityManager;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -15,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -25,9 +32,13 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
 
-  public UserServiceImpl(ModelMapper modelMapper, UserRepository userRepository) {
+  private final EntityManager entityManager;
+
+  public UserServiceImpl(ModelMapper modelMapper, UserRepository userRepository,
+      EntityManager entityManager) {
     this.modelMapper = modelMapper;
     this.userRepository = userRepository;
+    this.entityManager = entityManager;
   }
 
   private User convertToEntity(RegisterUserDto userDto) {
@@ -55,6 +66,25 @@ public class UserServiceImpl implements UserService {
     logger.trace("Got user: {}", user);
 
     return userRepository.save(user);
+  }
+
+  @Transactional
+  @Override
+  public User updateUser(String uuid, @Valid UpdateUserDto userDto) {
+    final QUser user = QUser.user;
+
+    try {
+
+      new JPAUpdateClause(entityManager, user)
+          .where(user.uuid.eq(UUID.fromString(uuid)))
+          .set(user.firstName, userDto.getFirstName())
+          .set(user.lastName, userDto.getLastName())
+          .execute();
+    } catch (final Exception e) {
+      logger.error(e.getMessage());
+    }
+
+    return userRepository.findByUuid(UUID.fromString(uuid)).get();
   }
 
   private void validateEmailDoesntExist(String email) {

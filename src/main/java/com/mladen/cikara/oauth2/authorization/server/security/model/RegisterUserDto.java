@@ -1,5 +1,8 @@
 package com.mladen.cikara.oauth2.authorization.server.security.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.mladen.cikara.oauth2.resource.server.controller.PasswordsDontMatchException;
 
 import javax.validation.constraints.Email;
@@ -7,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+@JsonRootName("user")
 public class RegisterUserDto {
 
   public static class Builder {
@@ -92,9 +96,12 @@ public class RegisterUserDto {
     passwordConfirmation = builder.passwordConfirmation;
   }
 
-  RegisterUserDto(@Email @NotNull String email, @Size(max = 50) @NotBlank String firstName,
-      @Size(max = 50) @NotBlank String lastName, @Size(max = 50) @NotBlank String password,
-      @Size(max = 50) @NotBlank String passwordConfirmation) {
+  @JsonCreator
+  RegisterUserDto(@Email @NotNull @JsonProperty("email") String email,
+      @Size(max = 50) @NotBlank @JsonProperty("firstName") String firstName,
+      @Size(max = 50) @NotBlank @JsonProperty("lastName") String lastName,
+      @Size(max = 50) @NotBlank @JsonProperty("password") String password,
+      @Size(max = 50) @NotBlank @JsonProperty("passwordConfirmation") String passwordConfirmation) {
     super();
     this.email = email;
     this.firstName = firstName;

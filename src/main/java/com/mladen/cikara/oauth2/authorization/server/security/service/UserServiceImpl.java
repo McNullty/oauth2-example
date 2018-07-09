@@ -8,6 +8,7 @@ import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
 import com.mladen.cikara.oauth2.resource.server.controller.EmailAlreadyRegisterdException;
 import com.mladen.cikara.oauth2.resource.server.controller.PasswordsDontMatchException;
+import com.querydsl.jpa.impl.JPADeleteClause;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 
 import java.util.UUID;
@@ -45,6 +46,19 @@ public class UserServiceImpl implements UserService {
     return modelMapper.map(userDto, User.Builder.class).build();
   }
 
+  @Transactional
+  @Override
+  public void deleteUser(String uuid) throws EntityNotFoundException {
+    final QUser user = QUser.user;
+
+    final long numberOfAffectedRows = new JPADeleteClause(entityManager, user)
+        .where(user.uuid.eq(UUID.fromString(uuid))).execute();
+
+    if (numberOfAffectedRows == 0) {
+      throw new EntityNotFoundException();
+    }
+  }
+
   @Override
   public Page<User> findAllUsers(Pageable page) {
     logger.trace("Got pagable: {}", page);
@@ -70,18 +84,17 @@ public class UserServiceImpl implements UserService {
 
   @Transactional
   @Override
-  public User updateUser(String uuid, @Valid UpdateUserDto userDto) {
+  public User updateUser(String uuid, @Valid UpdateUserDto userDto) throws EntityNotFoundException {
     final QUser user = QUser.user;
 
-    try {
+    final long numberOfAffectedRows = new JPAUpdateClause(entityManager, user)
+        .where(user.uuid.eq(UUID.fromString(uuid)))
+        .set(user.firstName, userDto.getFirstName())
+        .set(user.lastName, userDto.getLastName())
+        .execute();
 
-      new JPAUpdateClause(entityManager, user)
-          .where(user.uuid.eq(UUID.fromString(uuid)))
-          .set(user.firstName, userDto.getFirstName())
-          .set(user.lastName, userDto.getLastName())
-          .execute();
-    } catch (final Exception e) {
-      logger.error(e.getMessage());
+    if (numberOfAffectedRows == 0) {
+      throw new EntityNotFoundException();
     }
 
     return userRepository.findByUuid(UUID.fromString(uuid)).get();

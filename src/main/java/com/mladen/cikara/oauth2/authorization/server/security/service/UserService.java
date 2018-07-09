@@ -10,9 +10,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface UserService {
+  void deleteUser(String uuid) throws EntityNotFoundException;
+
   Page<User> findAllUsers(Pageable page);
 
   User registerUser(@Valid RegisterUserDto userDto);
 
-  User updateUser(String uuid, @Valid UpdateUserDto userDto);
+  User updateUser(String uuid, @Valid UpdateUserDto userDto) throws EntityNotFoundException;
 }

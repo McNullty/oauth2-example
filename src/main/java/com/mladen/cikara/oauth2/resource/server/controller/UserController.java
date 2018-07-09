@@ -6,6 +6,7 @@ import com.mladen.cikara.oauth2.authorization.server.security.model.UpdateUserDt
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.model.UserResource;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
+import com.mladen.cikara.oauth2.authorization.server.security.service.EntityNotFoundException;
 import com.mladen.cikara.oauth2.authorization.server.security.service.UserService;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -104,6 +106,22 @@ public class UserController {
     return createResponseEntityFromUser(currentUserAdaptor.getUser());
   }
 
+  @DeleteMapping(path = "/{uuid}")
+  public ResponseEntity<Object> deleteUser(@PathVariable String uuid,
+      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor)
+      throws EntityNotFoundException {
+    if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
+
+      logger.debug("deleting user: {}", uuid);
+
+      userService.deleteUser(uuid);
+
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+  }
+
   @GetMapping(path = "/{uuid}")
   public ResponseEntity<UserResource> getUser(@PathVariable String uuid,
       @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
@@ -155,7 +173,8 @@ public class UserController {
     }
   }
 
-  private ResponseEntity<UserResource> updateUser(String uuid, @Valid UpdateUserDto userDto) {
+  private ResponseEntity<UserResource> updateUser(String uuid, @Valid UpdateUserDto userDto)
+      throws EntityNotFoundException {
     final User updatedUser = userService.updateUser(uuid, userDto);
 
     final UserResource updatedUserResource = new UserResource(updatedUser);
@@ -166,7 +185,8 @@ public class UserController {
   @PutMapping(path = "/{uuid}")
   public ResponseEntity<UserResource> updateUser(@PathVariable String uuid,
       @Valid @RequestBody UpdateUserDto userDto,
-      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
+      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor)
+      throws EntityNotFoundException {
     logger.debug("Authentication principal: {}", currentUserAdaptor);
     logger.debug("UpdateUserDto: {}", userDto);
 

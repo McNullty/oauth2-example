@@ -12,6 +12,8 @@ import com.mladen.cikara.oauth2.authorization.server.security.service.Authorizat
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
 import com.palantir.docker.compose.DockerComposeRule;
 
+import java.util.UUID;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -89,6 +91,79 @@ public class UserControllerIntTest {
     logger.debug("Configuring RestAssuredMockMvc");
 
     RestAssuredMockMvc.mockMvc(mockMvc);
+  }
+
+  @Test
+  public void whenDeleteUserWithInvalidUUIDAndLoggedInAsAdminUser_thenNotFound() throws Exception {
+    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+
+    final String urlPath = "/user/" + UUID.randomUUID();
+
+ // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .log().all()
+        .when()
+          .delete(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.NOT_FOUND.value())
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
+  public void whenDeleteUserWithUUIDAndLoggedInAsAdminUser_thenNoContent() throws Exception {
+    final User tempUser = createNewUser();
+
+    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+
+    final String urlPath = "/user/" + tempUser.getUUID().toString();
+
+ // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .log().all()
+        .when()
+          .delete(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.NO_CONTENT.value())
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
+  public void whenDeleteUserWithUUIDAndLoggedInAsBasicUser_thenUnauthorized() throws Exception {
+    final User tempUser = createNewUser();
+
+    final String jwt = getAuthorization(authorizationsUtilService.getBasicUser());
+
+    final String urlPath = "/user/" + tempUser.getUUID().toString();
+
+ // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .log().all()
+        .when()
+          .delete(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.UNAUTHORIZED.value())
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
   }
 
   @Test
@@ -233,11 +308,9 @@ public class UserControllerIntTest {
   @Test
   public void whenGetUserWithExistingUUIDAndLogggedInWithBasicUser_ThenUnauthorized()
       throws Exception {
-    final User tempUser = createNewUser();
-
     final String jwt = getAuthorization(authorizationsUtilService.getBasicUser());
 
-    final String urlPath = "/user/" + tempUser.getUUID().toString();
+    final String urlPath = "/user/" + UUID.randomUUID();
 
     // @formatter:off
     final MvcResult response =
@@ -249,6 +322,29 @@ public class UserControllerIntTest {
         .then()
           .log().all()
           .statusCode(HttpStatus.UNAUTHORIZED.value())
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
+  public void whenGetUserWithInvalidUUIDAndLogggedInWithAdmin_ThenNotFound() throws Exception {
+    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+
+    final String urlPath = "/user/" + UUID.randomUUID();
+
+    // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .log().all()
+        .when()
+          .get(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.NOT_FOUND.value())
           .extract().response()
           .mvcResult();
     // @formatter:on
@@ -314,6 +410,35 @@ public class UserControllerIntTest {
   }
 
   @Test
+  public void whenPutUserWithInvalidUUIDAndLoggedInAsAdminUser_thenNotFound() throws Exception {
+    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+
+    final String urlPath = "/user/" + UUID.randomUUID();
+
+    final String newFirstName = "newFirstName";
+    final String newLastName = "newLastName";
+    final String updateJsonObject = prepareUpdateJsonObject(newFirstName, newLastName);
+
+ // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .body(updateJsonObject)
+          .contentType("application/json")
+          .log().all()
+        .when()
+          .put(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.NOT_FOUND.value())
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
   public void whenPutUserWithUUIDAndLoggedInAsAdminUser_thenOK() throws Exception {
     final User tempUser = createNewUser();
 
@@ -349,10 +474,10 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenPutUserWithUUIDAndLoggedInAsBasicUser_thenUnauthorized() throws Exception {
+  public void whenPutUserWithUUIDAndLoggedInAsUserUser_thenUnauthorized() throws Exception {
     final User tempUser = createNewUser();
 
-    final String jwt = getAuthorization(authorizationsUtilService.getBasicUser());
+    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
 
     final String urlPath = "/user/" + tempUser.getUUID().toString();
 
@@ -371,7 +496,11 @@ public class UserControllerIntTest {
           .put(urlPath)
         .then()
           .log().all()
-          .statusCode(HttpStatus.UNAUTHORIZED.value())
+          .statusCode(HttpStatus.OK.value())
+          .body("email", equalTo(tempUser.getEmail()))
+          .body("firstName", equalTo(newFirstName))
+          .body("lastName", equalTo(newLastName))
+          .body("uuid", equalTo(tempUser.getUUID().toString()))
           .extract().response()
           .mvcResult();
     // @formatter:on

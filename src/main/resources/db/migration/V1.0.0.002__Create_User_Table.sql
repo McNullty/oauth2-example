@@ -12,8 +12,8 @@ GRANT SELECT, INSERT, UPDATE (first_name, last_name, password_hash), DELETE ON o
 GRANT USAGE, SELECT ON SEQUENCE oauth2_user_user_id_seq TO oauth2user;
 
 CREATE TABLE user_authority (
-    user_id BIGINT NOT NULL REFERENCES oauth2_user (user_id),
-    authority varchar(255) not null,
+    user_id BIGINT NOT NULL REFERENCES oauth2_user (user_id) ON DELETE CASCADE,
+    authority varchar(255) NOT NULL,
     UNIQUE(user_id, authority)
 );
 

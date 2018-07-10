@@ -2,6 +2,7 @@ package com.mladen.cikara.oauth2.authorization.server.security.service;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
 import com.mladen.cikara.oauth2.authorization.server.security.model.AuthorityDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.ChangePasswordDto;
 import com.mladen.cikara.oauth2.authorization.server.security.model.QUser;
 import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
 import com.mladen.cikara.oauth2.authorization.server.security.model.UpdateUserDto;
@@ -23,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +59,40 @@ public class UserServiceImpl implements UserService {
     return new AuthorityDto(updatedUser.getAuthorities());
   }
 
+  @Transactional
+  @Override
+  public void changePassword(Long id, @Valid ChangePasswordDto changePasswordDto) {
+
+    final Optional<User> optionalUser = userRepository.findById(id);
+    final User user = optionalUser.get();
+
+    final PasswordEncoder passwordEncoder =
+        PasswordEncoderFactories.createDelegatingPasswordEncoder();
+
+    if (passwordEncoder.matches(changePasswordDto.getOldPassword(), user.getPassword())) {
+      if (changePasswordDto.getNewPassword()
+          .equals(changePasswordDto.getNewPasswordConfirmation())) {
+
+        final QUser quser = QUser.user;
+
+        final long numberOfAffectedRows = new JPAUpdateClause(entityManager, quser)
+            .where(quser.id.eq(id))
+            .set(quser.password, passwordEncoder.encode(changePasswordDto.getNewPassword()))
+            .execute();
+
+        if (numberOfAffectedRows == 0) {
+          throw new EntityNotFoundException("Password not changed because user was not found.");
+        }
+
+      } else {
+        throw new PasswordsDontMatchException(
+            "New password and adn password confimation do not match");
+      }
+    } else {
+      throw new WrongPasswordsException("Wrong password.");
+    }
+  }
+
   private User convertToEntity(RegisterUserDto userDto) {
     return modelMapper.map(userDto, User.Builder.class).build();
   }
@@ -69,7 +106,7 @@ public class UserServiceImpl implements UserService {
         .where(user.uuid.eq(UUID.fromString(uuid))).execute();
 
     if (numberOfAffectedRows == 0) {
-      throw new EntityNotFoundException();
+      throw new EntityNotFoundException("Couldn't delete user, uuid not found");
     }
   }
 
@@ -120,7 +157,7 @@ public class UserServiceImpl implements UserService {
         .execute();
 
     if (numberOfAffectedRows == 0) {
-      throw new EntityNotFoundException();
+      throw new EntityNotFoundException("Couldn't update user, uuid not found");
     }
 
     return userRepository.findByUuid(UUID.fromString(uuid)).get();
@@ -128,13 +165,13 @@ public class UserServiceImpl implements UserService {
 
   private void validateEmailDoesntExist(String email) {
     if (userRepository.findByEmail(email).isPresent()) {
-      throw new EmailAlreadyRegisterdException();
+      throw new EmailAlreadyRegisterdException("Email already registered");
     }
   }
 
   private void validatePasswords(RegisterUserDto userDto) {
     if (!userDto.getPassword().equals(userDto.getPasswordConfirmation())) {
-      throw new PasswordsDontMatchException();
+      throw new PasswordsDontMatchException("Passwords do not match");
     }
   }
 

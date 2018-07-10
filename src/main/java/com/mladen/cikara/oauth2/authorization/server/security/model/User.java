@@ -184,12 +184,12 @@ public class User {
   private void checkPasswords(String password, String encryptedPassword) {
     if ((password == null || password.isEmpty())
         && (encryptedPassword == null || encryptedPassword.isEmpty())) {
-      throw new PasswordMustBeSetException();
+      throw new PasswordMustBeSetException("Passwords not set");
     }
 
     if ((password != null && !password.isEmpty())
         && (encryptedPassword != null && !encryptedPassword.isEmpty())) {
-      throw new DuplicatePasswordsSetException();
+      throw new DuplicatePasswordsSetException("Password and Encrypted password set");
     }
   }
 

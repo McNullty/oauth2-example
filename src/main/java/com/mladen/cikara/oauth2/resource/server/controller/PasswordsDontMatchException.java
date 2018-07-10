@@ -8,4 +8,7 @@ public class PasswordsDontMatchException extends RuntimeException {
 
   private static final long serialVersionUID = 925987266417146089L;
 
+  public PasswordsDontMatchException(String message) {
+    super(message);
+  }
 }

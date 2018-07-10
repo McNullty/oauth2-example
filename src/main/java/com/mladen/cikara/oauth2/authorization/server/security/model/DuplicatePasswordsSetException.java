@@ -13,4 +13,7 @@ public class DuplicatePasswordsSetException extends RuntimeException {
    */
   private static final long serialVersionUID = -4024547151332900379L;
 
+  public DuplicatePasswordsSetException(String message) {
+    super(message);
+  }
 }

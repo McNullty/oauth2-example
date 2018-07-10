@@ -1,6 +1,7 @@
 package com.mladen.cikara.oauth2.resource.server.controller;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
+import com.mladen.cikara.oauth2.authorization.server.security.model.AuthorityDto;
 import com.mladen.cikara.oauth2.authorization.server.security.model.SpringSecurityUserAdapter;
 import com.mladen.cikara.oauth2.authorization.server.security.model.UpdateUserDto;
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
@@ -28,6 +29,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,6 +47,20 @@ public class UserController {
   public UserController(UserRepository userRepository, UserService userService) {
     this.userRepository = userRepository;
     this.userService = userService;
+  }
+
+  @PostMapping("/{uuid}/add-authority")
+  public ResponseEntity<AuthorityDto> addUserAuthorities(@PathVariable String uuid,
+      @Valid @RequestBody AuthorityDto authorityDto,
+      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
+    logger.trace("AuthortyDto: {}", authorityDto);
+
+    if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
+      final AuthorityDto authorityDtoResponse = userService.addUserAuthorities(uuid, authorityDto);
+      return ResponseEntity.ok(authorityDtoResponse);
+    }
+
+    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
   }
 
   /**
@@ -147,6 +163,22 @@ public class UserController {
     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
   }
 
+  @GetMapping(path = "/{uuid}/authority")
+  public ResponseEntity<AuthorityDto> getUserAuthority(@PathVariable String uuid,
+      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
+    final Optional<User> user = userRepository.findByUuid(UUID.fromString(uuid));
+
+    if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
+      if (user.isPresent()) {
+        return ResponseEntity
+            .ok(new AuthorityDto(user.get().getAuthorities()));
+      }
+    }
+
+    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+  }
+
   @GetMapping
   public ResponseEntity<Page<UserResource>> getUsers(Pageable page,
       @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
@@ -171,6 +203,21 @@ public class UserController {
 
       return ResponseEntity.ok(userResourcePage);
     }
+  }
+
+  @PostMapping("/{uuid}/remove-authority")
+  public ResponseEntity<AuthorityDto> removeUserAuthorities(@PathVariable String uuid,
+      @Valid @RequestBody AuthorityDto authorityDto,
+      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
+    logger.trace("AuthortyDto: {}", authorityDto);
+
+    if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
+      final AuthorityDto authorityDtoResponse =
+          userService.removeUserAuthorities(uuid, authorityDto);
+      return ResponseEntity.ok(authorityDtoResponse);
+    }
+
+    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
   }
 
   private ResponseEntity<UserResource> updateUser(String uuid, @Valid UpdateUserDto userDto)
@@ -200,4 +247,23 @@ public class UserController {
 
     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
   }
+
+  /*
+// @formatter:off
+  @PutMapping(path = "/{uuid}/authority")
+  public ResponseEntity<UserResource> updateUserAuthority(@PathVariable String uuid,
+      @Valid @RequestBody UpdateUserAuthorityDto userAuthortyDto,
+      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor)
+      throws EntityNotFoundException {
+    logger.debug("Authentication principal: {}", currentUserAdaptor);
+    logger.debug("UpdateUserDto: {}", userAuthortyDto);
+
+    if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
+      return updateUserAuthorty(uuid, userAuthortyDto);
+    }
+
+    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+  }
+// @formatter:on
+  */
 }

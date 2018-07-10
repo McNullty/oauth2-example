@@ -1,6 +1,7 @@
 package com.mladen.cikara.oauth2.authorization.server.security.service;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
+import com.mladen.cikara.oauth2.authorization.server.security.model.AuthorityDto;
 import com.mladen.cikara.oauth2.authorization.server.security.model.QUser;
 import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
 import com.mladen.cikara.oauth2.authorization.server.security.model.UpdateUserDto;
@@ -11,6 +12,7 @@ import com.mladen.cikara.oauth2.resource.server.controller.PasswordsDontMatchExc
 import com.querydsl.jpa.impl.JPADeleteClause;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
@@ -40,6 +42,18 @@ public class UserServiceImpl implements UserService {
     this.modelMapper = modelMapper;
     this.userRepository = userRepository;
     this.entityManager = entityManager;
+  }
+
+  @Override
+  public AuthorityDto addUserAuthorities(String uuid, @Valid AuthorityDto authorityDto) {
+    final Optional<User> optionalUser = userRepository.findByUuid(UUID.fromString(uuid));
+
+    final User user = optionalUser.get();
+    user.addAllAuthority(authorityDto.getAuthorities().toArray(new Authority[0]));
+
+    final User updatedUser = userRepository.save(user);
+
+    return new AuthorityDto(updatedUser.getAuthorities());
   }
 
   private User convertToEntity(RegisterUserDto userDto) {
@@ -80,6 +94,18 @@ public class UserServiceImpl implements UserService {
     logger.trace("Got user: {}", user);
 
     return userRepository.save(user);
+  }
+
+  @Override
+  public AuthorityDto removeUserAuthorities(String uuid, @Valid AuthorityDto authorityDto) {
+    final Optional<User> optionalUser = userRepository.findByUuid(UUID.fromString(uuid));
+
+    final User user = optionalUser.get();
+    user.removeAllAuthority(authorityDto.getAuthorities().toArray(new Authority[0]));
+
+    final User updatedUser = userRepository.save(user);
+
+    return new AuthorityDto(updatedUser.getAuthorities());
   }
 
   @Transactional

@@ -1,6 +1,10 @@
 package com.mladen.cikara.oauth2.resource.server.controller;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -12,8 +16,11 @@ import com.mladen.cikara.oauth2.authorization.server.security.service.Authorizat
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
 import com.palantir.docker.compose.DockerComposeRule;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -71,6 +78,26 @@ public class UserControllerIntTest {
 
   private String getAuthorization(User user) throws Exception {
     return authorizationsUtilService.getAuthorizationJWT(user);
+  }
+
+  private String prepareAuthorityDtoJsonObject(Authority... authorities) throws JSONException {
+    final Collection<String> authoritiesStrings = new HashSet<>();
+
+    for (final Authority authority : authorities) {
+      authoritiesStrings.add(authority.toString());
+    }
+
+    final JSONArray array = new JSONArray(authoritiesStrings);
+
+    final JSONObject authoritiesJsonObj =
+        new JSONObject()
+            .put("authorities", array);
+
+    final JSONObject jsonObj =
+        new JSONObject()
+            .put("userAuthorities", authoritiesJsonObj);
+
+    return jsonObj.toString();
   }
 
   private String prepareUpdateJsonObject(final String firstName,
@@ -205,6 +232,57 @@ public class UserControllerIntTest {
         .andDo(print())
         .andExpect(status().isUnauthorized());
     // @formatter:on
+  }
+
+  @Test
+  public void whenGetUserAuthortyAndLogggedInWithAdmin_ThenOK() throws Exception {
+    final User tempUser = createNewUser();
+
+    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+
+    final String urlPath = "/user/" + tempUser.getUUID().toString() + "/authority";
+
+    // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .log().all()
+        .when()
+          .get(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .body("authorities", hasItem(Authority.ROLE_USER.toString()))
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
+  public void whenGetUserAuthortyAndLogggedInWithBasicUser_ThenUnauthorized() throws Exception {
+    final User tempUser = createNewUser();
+
+    final String jwt = getAuthorization(authorizationsUtilService.getBasicUser());
+
+    final String urlPath = "/user/" + tempUser.getUUID().toString() + "/authority";
+
+    // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .log().all()
+        .when()
+          .get(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.UNAUTHORIZED.value())
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
   }
 
   @Test
@@ -402,6 +480,75 @@ public class UserControllerIntTest {
           .body("lastName", equalTo(user.getLastName()))
           .body("uuid", equalTo(user.getUUID().toString()))
           .body("_links.self.href", equalTo("http://localhost/user/" + user.getUUID().toString()))
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
+  public void whenPostAddAuthorityAsAdminUser_thenOK() throws Exception {
+    final User tempUser = createNewUser();
+
+    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+
+    final String urlPath = "/user/" + tempUser.getUUID() + "/add-authority";
+
+    final String authorityDtoJsonObject =
+        prepareAuthorityDtoJsonObject(Authority.ROLE_ADMIN, Authority.ROLE_SYS_ADMIN);
+
+    logger.debug("authorityDtoJsonObject: {}", authorityDtoJsonObject);
+
+ // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .body(authorityDtoJsonObject)
+          .contentType("application/json")
+          .log().all()
+        .when()
+          .post(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .body("authorities", hasItems(
+              Authority.ROLE_USER.toString(),
+              Authority.ROLE_ADMIN.toString(),
+              Authority.ROLE_SYS_ADMIN.toString()))
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
+  public void whenPostRemoveAuthorityAsAdminUser_thenOK() throws Exception {
+    final User tempUser = createNewUser();
+
+    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+
+    final String urlPath = "/user/" + tempUser.getUUID() + "/remove-authority";
+
+    final String authorityDtoJsonObject =
+        prepareAuthorityDtoJsonObject(Authority.ROLE_USER, Authority.ROLE_SYS_ADMIN);
+
+    logger.debug("authorityDtoJsonObject: {}", authorityDtoJsonObject);
+
+ // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .body(authorityDtoJsonObject)
+          .contentType("application/json")
+          .log().all()
+        .when()
+          .post(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .body("authorities", is(empty()))
           .extract().response()
           .mvcResult();
     // @formatter:on

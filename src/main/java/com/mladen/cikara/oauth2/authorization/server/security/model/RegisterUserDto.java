@@ -24,7 +24,7 @@ public class RegisterUserDto {
       if (password == null || passwordConfirmation == null || password.isEmpty()
           || passwordConfirmation.isEmpty() || !password.equals(passwordConfirmation)) {
 
-        throw new PasswordsDontMatchException();
+        throw new PasswordsDontMatchException("Passwords not set");
       }
 
       return new RegisterUserDto(this);

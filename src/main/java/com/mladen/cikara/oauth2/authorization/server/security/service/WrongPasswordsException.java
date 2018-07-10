@@ -3,15 +3,15 @@ package com.mladen.cikara.oauth2.authorization.server.security.service;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class EntityNotFoundException extends RuntimeException {
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class WrongPasswordsException extends RuntimeException {
 
   /**
    *
    */
-  private static final long serialVersionUID = 7044223464105217972L;
+  private static final long serialVersionUID = 7142178498433556438L;
 
-  public EntityNotFoundException(String message) {
+  public WrongPasswordsException(String message) {
     super(message);
   }
 }

@@ -17,4 +17,7 @@ public class PasswordMustBeSetException extends RuntimeException {
    */
   private static final long serialVersionUID = -3182632265531382054L;
 
+  public PasswordMustBeSetException(String message) {
+    super(message);
+  }
 }

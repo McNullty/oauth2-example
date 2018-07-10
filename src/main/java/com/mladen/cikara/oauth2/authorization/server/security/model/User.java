@@ -254,6 +254,28 @@ public class User {
   }
 
   /**
+   * Removes all authorities in specified collection to this authorities
+   * collection
+   *
+   * @param authorities
+   *          collection containing authorities to be added to this authorities
+   *          collection
+   */
+  public void removeAllAuthority(Authority... authorities) {
+    this.authorities.removeAll(Arrays.asList(authorities));
+  }
+
+  /**
+   * Removes the specified authority from authorities collection
+   *
+   * @param authority
+   *          authority to be added to authorities collection
+   */
+  public void removeAuthority(Authority authority) {
+    authorities.remove(authority);
+  }
+
+  /**
    * This method accepts password in clear text and hashes it before storing it in
    * password filed.
    *

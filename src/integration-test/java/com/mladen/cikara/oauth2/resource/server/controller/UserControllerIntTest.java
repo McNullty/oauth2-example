@@ -3,6 +3,8 @@ package com.mladen.cikara.oauth2.resource.server.controller;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -351,38 +353,6 @@ public class UserControllerIntTest {
     logger.debug("Response: {}", response);
   }
 
-  /*
-  @Test
-  public void whenPostUserAuthorityAndLogggedInWithAdmin_ThenOK() throws Exception {
-    final User tempUser = createNewUser();
-
-    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
-
-    final String urlPath = "/user/" + tempUser.getUUID().toString() + "/authority";
-
-    // @formatter:off
-    final MvcResult response =
-        given()
-          .header("Authorization", "Bearer " + jwt)
-          .log().all()
-        .when()
-          .get(urlPath)
-        .then()
-          .log().all()
-          .statusCode(HttpStatus.OK.value())
-          .body("email", equalTo(tempUser.getEmail()))
-          .body("firstName", equalTo(tempUser.getFirstName()))
-          .body("lastName", equalTo(tempUser.getLastName()))
-          .body("uuid", equalTo(tempUser.getUUID().toString()))
-          .body("_links.self.href", equalTo("http://localhost/user/" + tempUser.getUUID().toString()))
-          .extract().response()
-          .mvcResult();
-    // @formatter:on
-
-    logger.debug("Response: {}", response);
-  }
-  */
-
   @Test
   public void whenGetUserWithExistingUUIDAndLogggedInWithAdmin_ThenOK() throws Exception {
     final User tempUser = createNewUser();
@@ -546,6 +516,39 @@ public class UserControllerIntTest {
               Authority.ROLE_USER.toString(),
               Authority.ROLE_ADMIN.toString(),
               Authority.ROLE_SYS_ADMIN.toString()))
+          .extract().response()
+          .mvcResult();
+    // @formatter:on
+
+    logger.debug("Response: {}", response);
+  }
+
+  @Test
+  public void whenPostRemoveAuthorityAsAdminUser_thenOK() throws Exception {
+    final User tempUser = createNewUser();
+
+    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+
+    final String urlPath = "/user/" + tempUser.getUUID() + "/remove-authority";
+
+    final String authorityDtoJsonObject =
+        prepareAuthorityDtoJsonObject(Authority.ROLE_USER, Authority.ROLE_SYS_ADMIN);
+
+    logger.debug("authorityDtoJsonObject: {}", authorityDtoJsonObject);
+
+ // @formatter:off
+    final MvcResult response =
+        given()
+          .header("Authorization", "Bearer " + jwt)
+          .body(authorityDtoJsonObject)
+          .contentType("application/json")
+          .log().all()
+        .when()
+          .post(urlPath)
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.OK.value())
+          .body("authorities", is(empty()))
           .extract().response()
           .mvcResult();
     // @formatter:on

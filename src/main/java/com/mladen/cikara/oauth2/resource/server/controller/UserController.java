@@ -55,6 +55,11 @@ public class UserController {
       @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
     logger.trace("AuthortyDto: {}", authorityDto);
 
+    if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
+      final AuthorityDto authorityDtoResponse = userService.addUserAuthorities(uuid, authorityDto);
+      return ResponseEntity.ok(authorityDtoResponse);
+    }
+
     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
   }
 
@@ -205,6 +210,12 @@ public class UserController {
       @Valid @RequestBody AuthorityDto authorityDto,
       @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
     logger.trace("AuthortyDto: {}", authorityDto);
+
+    if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
+      final AuthorityDto authorityDtoResponse =
+          userService.removeUserAuthorities(uuid, authorityDto);
+      return ResponseEntity.ok(authorityDtoResponse);
+    }
 
     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
   }

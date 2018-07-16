@@ -27,15 +27,15 @@ You can run `./mvnw clean generate-sources verify` and read site that was create
 
 ### Find Bugs
 
-Report will be created with `/mvnw site`
+Report will be created with `./mvnw site`
 
 ### PMD 
 
-Report will be created with `/mvnw site`
+Report will be created with `./mvnw site`
 
 ### Checkstyle
 
-Report will be created with `/mvnw site`
+Report will be created with `./mvnw site`
 
 ### Error Prone
 
@@ -49,4 +49,4 @@ You need to comment out flyway dependency in pom.xml, and uncomment `hibernate.d
 - [x] Add tests for /public, /private and /actuator/health end points
 - [x] Configure server to work only with HTTPS protocol
 - [x] Add support for retrieving user information from database
-- [ ] Add support for retrieving client information from database (web clients)
+- [x] Add support for retrieving client information from database (web clients)

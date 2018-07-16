@@ -20,7 +20,9 @@ import org.springframework.hateoas.ResourceSupport;
 public class UserResource extends ResourceSupport {
 
   private final String email;
+
   private final UUID uuid;
+
   private final String firstName;
   private final String lastName;
   private final Set<Authority> authorities;
@@ -45,6 +47,28 @@ public class UserResource extends ResourceSupport {
     add(allUsersLink);
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!super.equals(obj)) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final UserResource other = (UserResource) obj;
+    if (uuid == null) {
+      if (other.uuid != null) {
+        return false;
+      }
+    } else if (!uuid.equals(other.uuid)) {
+      return false;
+    }
+    return true;
+  }
+
   public Set<Authority> getAuthorities() {
     return authorities;
   }
@@ -63,6 +87,14 @@ public class UserResource extends ResourceSupport {
 
   public UUID getUuid() {
     return uuid;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+    return result;
   }
 
 }

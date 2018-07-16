@@ -8,6 +8,7 @@ import com.mladen.cikara.oauth2.resource.server.controller.UserController;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -35,14 +36,16 @@ public class UserResource extends ResourceSupport {
     authorities = user.getAuthorities();
 
     final Link selfLink =
-        linkTo(methodOn(UserController.class).getUser(user.getUUID().toString(), null))
-            .withSelfRel().withDeprecation("Direct access to user entity");
+        linkTo(methodOn(UserController.class).getUser(user.getUUID().toString(),
+            new SpringSecurityUserAdapter(user)))
+                .withSelfRel().withDeprecation("Direct access to user entity");
 
     add(selfLink);
 
     final Link allUsersLink =
-        linkTo(methodOn(UserController.class).getUsers(null, null))
-            .withRel("allUsers").withDeprecation("List of all users");
+        linkTo(methodOn(UserController.class).getUsers(PageRequest.of(0, 1),
+            new SpringSecurityUserAdapter(user)))
+                .withRel("allUsers").withDeprecation("List of all users");
 
     add(allUsersLink);
   }

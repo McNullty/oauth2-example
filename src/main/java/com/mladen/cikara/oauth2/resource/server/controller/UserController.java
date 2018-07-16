@@ -247,23 +247,4 @@ public class UserController {
 
     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
   }
-
-  /*
-// @formatter:off
-  @PutMapping(path = "/{uuid}/authority")
-  public ResponseEntity<UserResource> updateUserAuthority(@PathVariable String uuid,
-      @Valid @RequestBody UpdateUserAuthorityDto userAuthortyDto,
-      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor)
-      throws EntityNotFoundException {
-    logger.debug("Authentication principal: {}", currentUserAdaptor);
-    logger.debug("UpdateUserDto: {}", userAuthortyDto);
-
-    if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
-      return updateUserAuthorty(uuid, userAuthortyDto);
-    }
-
-    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-  }
-// @formatter:on
-  */
 }

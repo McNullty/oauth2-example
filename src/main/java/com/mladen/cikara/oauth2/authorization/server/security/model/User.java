@@ -2,6 +2,7 @@ package com.mladen.cikara.oauth2.authorization.server.security.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,7 +30,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 
 @Entity
 @Table(name = "oauth2_user")
-public class User {
+public class User implements Serializable {
 
   public static class Builder {
     private Long id;
@@ -91,6 +92,8 @@ public class User {
       return this;
     }
   }
+
+  private static final long serialVersionUID = -7596199454429470917L;
 
   private static final Logger log = LoggerFactory.getLogger(User.class);
 

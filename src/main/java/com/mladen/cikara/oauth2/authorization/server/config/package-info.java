@@ -2,7 +2,7 @@
  *
  */
 /**
- * @author Mladen Čikara <mladen.cikara@gmail.com>
+ * @author mladen
  *
  */
 package com.mladen.cikara.oauth2.authorization.server.config;

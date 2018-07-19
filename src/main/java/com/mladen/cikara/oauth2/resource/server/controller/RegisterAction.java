@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 public class RegisterAction {
@@ -50,8 +49,7 @@ public class RegisterAction {
     final UserResource userResource = new UserResource(newUser);
 
     // FIXME: Location is not returned correctly
-    final URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-        .buildAndExpand(userResource.getId()).toUri();
+    final URI location = URI.create(userResource.getLink("self").getHref());
 
     return ResponseEntity.created(location).build();
   }

@@ -231,11 +231,9 @@ public class UserController {
       final SpringSecurityUserAdapter currentUserAdaptor) {
     final Optional<User> user = this.userRepository.findByUuid(UUID.fromString(uuid));
 
-    if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
-      if (user.isPresent()) {
-        return ResponseEntity
-            .ok(new AuthorityDto(user.get().getAuthorities()));
-      }
+    if (checkUserHasAdminRole(currentUserAdaptor.getUser()) && user.isPresent()) {
+      return ResponseEntity
+          .ok(new AuthorityDto(user.get().getAuthorities()));
     }
 
     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

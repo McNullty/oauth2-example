@@ -19,11 +19,30 @@ public class ChangePasswordDto {
   @NotBlank
   private final String newPasswordConfirmation;
 
+  /**
+   * Creates object from json object.
+   *
+   * @param oldPassword
+   *          old password
+   * @param newPassword
+   *          new password
+   * @param newPasswordConfirmation
+   *          password confirmation
+   */
   public ChangePasswordDto(
-      @Size(max = 50) @NotBlank @JsonProperty("oldPassword") String oldPassword,
-      @Size(max = 50) @NotBlank @JsonProperty("newPassword") String newPassword,
+      @Size(max = 50)
+      @NotBlank
+      @JsonProperty("oldPassword")
+      final String oldPassword,
+      @Size(max = 50)
+      @NotBlank
+      @JsonProperty("newPassword")
+      final String newPassword,
       @Size(
-          max = 50) @NotBlank @JsonProperty("newPasswordConfirmation") String newPasswordConfirmation) {
+          max = 50)
+      @NotBlank
+      @JsonProperty("newPasswordConfirmation")
+      final String newPasswordConfirmation) {
     super();
     this.oldPassword = oldPassword;
     this.newPassword = newPassword;
@@ -31,21 +50,22 @@ public class ChangePasswordDto {
   }
 
   public String getNewPassword() {
-    return newPassword;
+    return this.newPassword;
   }
 
   public String getNewPasswordConfirmation() {
-    return newPasswordConfirmation;
+    return this.newPasswordConfirmation;
   }
 
   public String getOldPassword() {
-    return oldPassword;
+    return this.oldPassword;
   }
 
   @Override
   public String toString() {
-    return "ChangePasswordDto [oldPassword=" + oldPassword + ", newPassword=" + newPassword
-        + ", newPasswordConfirmation=" + newPasswordConfirmation + "]";
+    return "ChangePasswordDto [oldPassword=" + this.oldPassword
+        + ", newPassword=" + this.newPassword
+        + ", newPasswordConfirmation=" + this.newPasswordConfirmation + "]";
   }
 
 }

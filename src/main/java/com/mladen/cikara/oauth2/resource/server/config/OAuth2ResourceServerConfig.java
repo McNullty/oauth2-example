@@ -7,11 +7,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 
 /**
- * This is a place for overriding default configuration for OAuth2 Resource
- * server. For reference you should check
- * {@link OAuth2ResourceServerConfiguration}
+ * This is a place for overriding default configuration for OAuth2 Resource server. For reference
+ * you should check {@link OAuth2ResourceServerConfiguration}
  *
- * @author Mladen Čikara <mladen.cikara@gmail.com>
+ * @author mladen
  *
  */
 @Configuration
@@ -19,9 +18,9 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
   @Override
-  public void configure(HttpSecurity http) throws Exception {
+  public void configure(final HttpSecurity http) throws Exception {
 
-// @formatter:off
+    // @formatter:off
 
     http.authorizeRequests()
       .antMatchers("/public").permitAll()
@@ -29,7 +28,7 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
       .anyRequest().authenticated()
       ;
 
-// @formatter:on
+    // @formatter:on
 
   }
 }

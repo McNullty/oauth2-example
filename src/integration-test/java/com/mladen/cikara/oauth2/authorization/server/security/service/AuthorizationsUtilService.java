@@ -5,7 +5,6 @@ import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
 import com.mladen.cikara.oauth2.util.OAuth2AuthorizationBuilder;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -19,25 +18,27 @@ public class AuthorizationsUtilService {
   private final MockMvc mockMvc;
 
   /**
-   * Initializes service
-   *
-   * @param userService
-   * @param userRepositiry
+   * Initializes service.
+   * 
+   * @param userRepository
+   *          User Repository
+   * @param mockMvc
+   *          Mock MVC
    */
-  public AuthorizationsUtilService(UserRepository userRepository, MockMvc mockMvc) {
+  public AuthorizationsUtilService(final UserRepository userRepository, final MockMvc mockMvc) {
     this.userRepository = userRepository;
     this.mockMvc = mockMvc;
   }
 
   /**
-   * Creates temporary user with specified authorities
+   * Creates temporary user with specified authorities.
    *
    * @param authorities
    *          Array of authorities that temp user should have
    *
    * @return temp user that should be used for testing
    */
-  public User createTempUserWithAuthorities(Authority... authorities) {
+  public User createTempUserWithAuthorities(final Authority... authorities) {
     User user = new User.Builder()
         .email("temp.user." + System.currentTimeMillis() + "@oauth2.com")
         .password(PASSWORD)
@@ -45,7 +46,7 @@ public class AuthorizationsUtilService {
         .lastName("User")
         .authorities(authorities).build();
 
-    user = userRepository.save(user);
+    user = this.userRepository.save(user);
 
     return user;
   }
@@ -55,30 +56,27 @@ public class AuthorizationsUtilService {
    *
    * @return user with email admin@oauth2.com and ADMIN_ROLE
    *
-   * @throws NoSuchElementException
    */
   public User getAdminUser() {
-    final Optional<User> user = userRepository.findByEmail("admin@oauth2.com");
+    final Optional<User> user = this.userRepository.findByEmail("admin@oauth2.com");
 
     return user.get();
   }
 
   /**
-   * Returns JWT token for given user. Password is hard coded to string "secret"
-   * so user that is passed in should be created whit methods
-   * {@link #getBasicUser()} {@link #getAdminUser()} or
-   * {@link #getAuthorizationJWT(User)}
+   * Returns JWT token for given user. Password is hard coded to string "secret" so user that is
+   * passed in should be created whit methods {@link #getBasicUser()} {@link #getAdminUser()} or
+   * {@link #getAuthorizationJwt(User)}
    *
    * @param user
    *          User for which JTW is created
    * @return JWT token
-   * @throws Exception
    */
-  public String getAuthorizationJWT(User user) throws Exception {
+  public String getAuthorizationJwt(final User user) throws Exception {
     // @formatter:off
     final String jwt =
         OAuth2AuthorizationBuilder
-          .oauth2Request(mockMvc)
+          .oauth2Request(this.mockMvc)
           .grantType("password")
           .accessTokenUrl("/oauth/token")
           .username(user.getEmail())
@@ -97,10 +95,9 @@ public class AuthorizationsUtilService {
    *
    * @return user with email user@oauth2.com and USER_ROLE
    *
-   * @throws NoSuchElementException
    */
   public User getBasicUser() {
-    final Optional<User> user = userRepository.findByEmail("user@oauth2.com");
+    final Optional<User> user = this.userRepository.findByEmail("user@oauth2.com");
 
     return user.get();
   }

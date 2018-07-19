@@ -13,7 +13,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
 /**
- * This is object that will be returned by REST API
+ * This is object that will be returned by REST API.
  *
  * @author Mladen Čikara mladen.cikara@gmail.com
  *
@@ -28,15 +28,22 @@ public class UserResource extends ResourceSupport {
   private final String lastName;
   private final Set<Authority> authorities;
 
-  public UserResource(User user) {
-    email = user.getEmail();
-    uuid = user.getUUID();
-    firstName = user.getFirstName();
-    lastName = user.getLastName();
-    authorities = user.getAuthorities();
+  /**
+   * Resource object that will be returned by REST api. It uses HATEOS specification. It adds links
+   * to object
+   *
+   * @param user
+   *          User object that is being wrapped.
+   */
+  public UserResource(final User user) {
+    this.email = user.getEmail();
+    this.uuid = user.getUuid();
+    this.firstName = user.getFirstName();
+    this.lastName = user.getLastName();
+    this.authorities = user.getAuthorities();
 
     final Link selfLink =
-        linkTo(methodOn(UserController.class).getUser(user.getUUID().toString(),
+        linkTo(methodOn(UserController.class).getUser(user.getUuid().toString(),
             new SpringSecurityUserAdapter(user)))
                 .withSelfRel().withDeprecation("Direct access to user entity");
 
@@ -51,7 +58,7 @@ public class UserResource extends ResourceSupport {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
     }
@@ -62,41 +69,41 @@ public class UserResource extends ResourceSupport {
       return false;
     }
     final UserResource other = (UserResource) obj;
-    if (uuid == null) {
+    if (this.uuid == null) {
       if (other.uuid != null) {
         return false;
       }
-    } else if (!uuid.equals(other.uuid)) {
+    } else if (!this.uuid.equals(other.uuid)) {
       return false;
     }
     return true;
   }
 
   public Set<Authority> getAuthorities() {
-    return authorities;
+    return this.authorities;
   }
 
   public String getEmail() {
-    return email;
+    return this.email;
   }
 
   public String getFirstName() {
-    return firstName;
+    return this.firstName;
   }
 
   public String getLastName() {
-    return lastName;
+    return this.lastName;
   }
 
   public UUID getUuid() {
-    return uuid;
+    return this.uuid;
   }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = super.hashCode();
-    result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+    result = prime * result + (this.uuid == null ? 0 : this.uuid.hashCode());
     return result;
   }
 

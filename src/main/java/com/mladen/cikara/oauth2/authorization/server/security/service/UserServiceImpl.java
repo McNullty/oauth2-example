@@ -40,30 +40,44 @@ public class UserServiceImpl implements UserService {
 
   private final EntityManager entityManager;
 
-  public UserServiceImpl(ModelMapper modelMapper, UserRepository userRepository,
-      EntityManager entityManager) {
+  /**
+   * Creates service for manipulating User objects.
+   *
+   * @param modelMapper
+   *          Model mapper for converting between Domain and DTO objects
+   * @param userRepository
+   *          User DAO object
+   * @param entityManager
+   *          Entity manager used by QueryDSL
+   */
+  public UserServiceImpl(final ModelMapper modelMapper, final UserRepository userRepository,
+      final EntityManager entityManager) {
     this.modelMapper = modelMapper;
     this.userRepository = userRepository;
     this.entityManager = entityManager;
   }
 
   @Override
-  public AuthorityDto addUserAuthorities(String uuid, @Valid AuthorityDto authorityDto) {
-    final Optional<User> optionalUser = userRepository.findByUuid(UUID.fromString(uuid));
+  public AuthorityDto addUserAuthorities(
+      final String uuid, @Valid
+      final AuthorityDto authorityDto) {
+    final Optional<User> optionalUser = this.userRepository.findByUuid(UUID.fromString(uuid));
 
     final User user = optionalUser.get();
     user.addAllAuthority(authorityDto.getAuthorities().toArray(new Authority[0]));
 
-    final User updatedUser = userRepository.save(user);
+    final User updatedUser = this.userRepository.save(user);
 
     return new AuthorityDto(updatedUser.getAuthorities());
   }
 
   @Transactional
   @Override
-  public void changePassword(Long id, @Valid ChangePasswordDto changePasswordDto) {
+  public void changePassword(
+      final Long id, @Valid
+      final ChangePasswordDto changePasswordDto) {
 
-    final Optional<User> optionalUser = userRepository.findById(id);
+    final Optional<User> optionalUser = this.userRepository.findById(id);
     final User user = optionalUser.get();
 
     final PasswordEncoder passwordEncoder =
@@ -75,7 +89,7 @@ public class UserServiceImpl implements UserService {
 
         final QUser quser = QUser.user;
 
-        final long numberOfAffectedRows = new JPAUpdateClause(entityManager, quser)
+        final long numberOfAffectedRows = new JPAUpdateClause(this.entityManager, quser)
             .where(quser.id.eq(id))
             .set(quser.password, passwordEncoder.encode(changePasswordDto.getNewPassword()))
             .execute();
@@ -93,16 +107,16 @@ public class UserServiceImpl implements UserService {
     }
   }
 
-  private User convertToEntity(RegisterUserDto userDto) {
-    return modelMapper.map(userDto, User.Builder.class).build();
+  private User convertToEntity(final RegisterUserDto userDto) {
+    return this.modelMapper.map(userDto, User.Builder.class).build();
   }
 
   @Transactional
   @Override
-  public void deleteUser(String uuid) throws EntityNotFoundException {
+  public void deleteUser(final String uuid) throws EntityNotFoundException {
     final QUser user = QUser.user;
 
-    final long numberOfAffectedRows = new JPADeleteClause(entityManager, user)
+    final long numberOfAffectedRows = new JPADeleteClause(this.entityManager, user)
         .where(user.uuid.eq(UUID.fromString(uuid))).execute();
 
     if (numberOfAffectedRows == 0) {
@@ -111,14 +125,16 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Page<User> findAllUsers(Pageable page) {
+  public Page<User> findAllUsers(final Pageable page) {
     logger.trace("Got pagable: {}", page);
 
-    return userRepository.findAll(page);
+    return this.userRepository.findAll(page);
   }
 
   @Override
-  public User registerUser(@Valid RegisterUserDto userDto) {
+  public User registerUser(
+      @Valid
+      final RegisterUserDto userDto) {
 
     logger.trace("Got user DTO: {}", userDto);
 
@@ -130,27 +146,32 @@ public class UserServiceImpl implements UserService {
 
     logger.trace("Got user: {}", user);
 
-    return userRepository.save(user);
+    return this.userRepository.save(user);
   }
 
   @Override
-  public AuthorityDto removeUserAuthorities(String uuid, @Valid AuthorityDto authorityDto) {
-    final Optional<User> optionalUser = userRepository.findByUuid(UUID.fromString(uuid));
+  public AuthorityDto removeUserAuthorities(final String uuid,
+      @Valid
+      final AuthorityDto authorityDto) {
+    final Optional<User> optionalUser = this.userRepository.findByUuid(UUID.fromString(uuid));
 
     final User user = optionalUser.get();
     user.removeAllAuthority(authorityDto.getAuthorities().toArray(new Authority[0]));
 
-    final User updatedUser = userRepository.save(user);
+    final User updatedUser = this.userRepository.save(user);
 
     return new AuthorityDto(updatedUser.getAuthorities());
   }
 
   @Transactional
   @Override
-  public User updateUser(String uuid, @Valid UpdateUserDto userDto) throws EntityNotFoundException {
+  public User updateUser(final String uuid,
+      @Valid
+      final UpdateUserDto userDto)
+      throws EntityNotFoundException {
     final QUser user = QUser.user;
 
-    final long numberOfAffectedRows = new JPAUpdateClause(entityManager, user)
+    final long numberOfAffectedRows = new JPAUpdateClause(this.entityManager, user)
         .where(user.uuid.eq(UUID.fromString(uuid)))
         .set(user.firstName, userDto.getFirstName())
         .set(user.lastName, userDto.getLastName())
@@ -160,22 +181,22 @@ public class UserServiceImpl implements UserService {
       throw new EntityNotFoundException("Couldn't update user, uuid not found");
     }
 
-    return userRepository.findByUuid(UUID.fromString(uuid)).get();
+    return this.userRepository.findByUuid(UUID.fromString(uuid)).get();
   }
 
-  private void validateEmailDoesntExist(String email) {
-    if (userRepository.findByEmail(email).isPresent()) {
+  private void validateEmailDoesntExist(final String email) {
+    if (this.userRepository.findByEmail(email).isPresent()) {
       throw new EmailAlreadyRegisterdException("Email already registered");
     }
   }
 
-  private void validatePasswords(RegisterUserDto userDto) {
+  private void validatePasswords(final RegisterUserDto userDto) {
     if (!userDto.getPassword().equals(userDto.getPasswordConfirmation())) {
       throw new PasswordsDontMatchException("Passwords do not match");
     }
   }
 
-  private void verifyInputData(RegisterUserDto userDto) {
+  private void verifyInputData(final RegisterUserDto userDto) {
     validatePasswords(userDto);
 
     validateEmailDoesntExist(userDto.getEmail());

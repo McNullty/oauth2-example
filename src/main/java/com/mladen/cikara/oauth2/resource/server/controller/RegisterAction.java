@@ -24,28 +24,35 @@ public class RegisterAction {
 
   private final UserService userService;
 
-  public RegisterAction(UserService userService) {
+  public RegisterAction(final UserService userService) {
     this.userService = userService;
   }
 
+  /**
+   * End point for registering new user.
+   *
+   * @param userDto
+   *          UserDto created from json object
+   * @return
+   */
   @PostMapping("/register")
-  public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterUserDto userDto) {
+  public ResponseEntity<?> registerUser(
+      @Valid
+      @RequestBody
+      final RegisterUserDto userDto) {
 
     logger.trace("Got user DTO: {}", userDto);
 
-    final User newUser = userService.registerUser(userDto);
+    final User newUser = this.userService.registerUser(userDto);
 
     logger.trace("Registered user: {}", newUser);
 
     final UserResource userResource = new UserResource(newUser);
 
-    // TODO: Add link to me
-    // final UserResource userResource = new UserResource(newUserDto);
-    //
+    // FIXME: Location is not returned correctly
     final URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
         .buildAndExpand(userResource.getId()).toUri();
 
-    // TODO: Add location to response
     return ResponseEntity.created(location).build();
   }
 }

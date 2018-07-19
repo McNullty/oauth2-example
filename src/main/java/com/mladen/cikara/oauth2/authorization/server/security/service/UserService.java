@@ -12,17 +12,27 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface UserService {
-  AuthorityDto addUserAuthorities(String uuid, @Valid AuthorityDto authorityDto);
+  AuthorityDto addUserAuthorities(
+      String uuid, @Valid
+      AuthorityDto authorityDto);
 
-  void changePassword(Long id, @Valid ChangePasswordDto changePasswordDto);
+  void changePassword(
+      Long id, @Valid
+      ChangePasswordDto changePasswordDto);
 
   void deleteUser(String uuid) throws EntityNotFoundException;
 
   Page<User> findAllUsers(Pageable page);
 
-  User registerUser(@Valid RegisterUserDto userDto);
+  User registerUser(
+      @Valid
+      RegisterUserDto userDto);
 
-  AuthorityDto removeUserAuthorities(String uuid, @Valid AuthorityDto authorityDto);
+  AuthorityDto removeUserAuthorities(
+      String uuid, @Valid
+      AuthorityDto authorityDto);
 
-  User updateUser(String uuid, @Valid UpdateUserDto userDto) throws EntityNotFoundException;
+  User updateUser(
+      String uuid, @Valid
+      UpdateUserDto userDto) throws EntityNotFoundException;
 }

@@ -21,7 +21,8 @@ public class ModelMapperConfigTest {
         .passwordConfirmation("secret")
         .build();
 
-    final User user = modelMapperConfig.modelMapper().map(registerUserDto, User.Builder.class).build();
+    final User user =
+        modelMapperConfig.modelMapper().map(registerUserDto, User.Builder.class).build();
 
     assertThat(user)
         .extracting("email", "firstName", "lastName")

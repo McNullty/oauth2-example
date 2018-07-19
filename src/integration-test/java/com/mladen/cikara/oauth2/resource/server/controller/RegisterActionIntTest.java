@@ -5,6 +5,9 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
 import com.palantir.docker.compose.DockerComposeRule;
 
+import io.restassured.http.ContentType;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
+
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -24,13 +27,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import io.restassured.http.ContentType;
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
-
 /**
- * This integration test tests registering new user
+ * This integration test tests registering new user.
  *
- * @author Mladen Čikara <mladen.cikara@gmail.com>
+ * @author mladen
  *
  */
 @ActiveProfiles("test")
@@ -53,11 +53,14 @@ public class RegisterActionIntTest {
   @Autowired
   private MockMvc mockMvc;
 
+  /**
+   * Setup test.
+   */
   @Before
   public void setup() throws Exception {
     logger.debug("Configuring RestAssuredMockMvc");
 
-    RestAssuredMockMvc.mockMvc(mockMvc);
+    RestAssuredMockMvc.mockMvc(this.mockMvc);
   }
 
   @Test
@@ -73,20 +76,20 @@ public class RegisterActionIntTest {
     final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
 
     // @formatter:off
-		final MvcResult response =
-		    given()
-		      .body(userJsonObj.toString())
-		      .contentType(ContentType.JSON)
-		      .log().all()
-	      .when()
-				  .post("/register")
-			  .then()
-			    .log().all()
-			    .statusCode(HttpStatus.BAD_REQUEST.value())
-			    .extract().response().mvcResult();
+    final MvcResult response =
+        given()
+          .body(userJsonObj.toString())
+          .contentType(ContentType.JSON)
+          .log().all()
+        .when()
+          .post("/register")
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.BAD_REQUEST.value())
+          .extract().response().mvcResult();
 
-		logger.debug("Response: {}", response);
-		// @formatter:on
+    logger.debug("Response: {}", response);
+    // @formatter:on
   }
 
   @Test
@@ -102,20 +105,20 @@ public class RegisterActionIntTest {
     final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
 
     // @formatter:off
-		final MvcResult response =
-		    given()
-		      .body(userJsonObj.toString())
-		      .contentType(ContentType.JSON)
-		      .log().all()
-	      .when()
-				  .post("/register")
-			  .then()
-			    .log().all()
-		      .statusCode(HttpStatus.CREATED.value())
-		      .extract().response().mvcResult();
+    final MvcResult response =
+        given()
+          .body(userJsonObj.toString())
+          .contentType(ContentType.JSON)
+          .log().all()
+        .when()
+          .post("/register")
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.CREATED.value())
+          .extract().response().mvcResult();
 
-		logger.debug("Response: {}", response);
-		// @formatter:on
+    logger.debug("Response: {}", response);
+    // @formatter:on
   }
 
   @Test
@@ -131,20 +134,20 @@ public class RegisterActionIntTest {
     final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
 
     // @formatter:off
-		final MvcResult response =
-		    given()
-		      .body(userJsonObj.toString())
-	        .contentType(ContentType.JSON)
-	        .log().all()
+    final MvcResult response =
+        given()
+          .body(userJsonObj.toString())
+          .contentType(ContentType.JSON)
+          .log().all()
         .when()
-				  .post("/register")
-			  .then()
-			    .log().all()
-			    .statusCode(HttpStatus.BAD_REQUEST.value())
-			    .extract().response().mvcResult();
+          .post("/register")
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.BAD_REQUEST.value())
+          .extract().response().mvcResult();
 
-		logger.debug("Response: {}", response);
-		// @formatter:on
+    logger.debug("Response: {}", response);
+    // @formatter:on
   }
 
   @Test
@@ -160,20 +163,20 @@ public class RegisterActionIntTest {
     final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
 
     // @formatter:off
-		final MvcResult response =
-		    given()
-		      .body(userJsonObj.toString())
-		      .contentType(ContentType.JSON)
-		      .log().all()
-	      .when()
-				  .post("/register")
-			  .then()
-			    .log().all()
-			    .statusCode(HttpStatus.BAD_REQUEST.value())
-			    .extract().response().mvcResult();
+    final MvcResult response =
+        given()
+            .body(userJsonObj.toString())
+            .contentType(ContentType.JSON)
+            .log().all()
+          .when()
+            .post("/register")
+          .then()
+            .log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .extract().response().mvcResult();
 
-		logger.debug("Response: {}", response);
-		// @formatter:on
+    logger.debug("Response: {}", response);
+    // @formatter:on
   }
 
   @Test
@@ -189,20 +192,20 @@ public class RegisterActionIntTest {
     final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
 
     // @formatter:off
-		final MvcResult response =
-		    given()
-		      .body(userJsonObj.toString())
-		      .contentType(ContentType.JSON)
-		      .log().all()
-	      .when()
-				  .post("/register")
-			  .then()
-			    .log().all()
-		      .statusCode(HttpStatus.BAD_REQUEST.value())
-		      .extract().response().mvcResult();
+    final MvcResult response =
+        given()
+            .body(userJsonObj.toString())
+            .contentType(ContentType.JSON)
+            .log().all()
+          .when()
+            .post("/register")
+          .then()
+            .log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .extract().response().mvcResult();
 
-		logger.debug("Response: {}", response);
-		// @formatter:on
+    logger.debug("Response: {}", response);
+    // @formatter:on
   }
 
   @Test
@@ -217,19 +220,19 @@ public class RegisterActionIntTest {
     final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
 
     // @formatter:off
-		final MvcResult response =
-		    given()
-		      .body(userJsonObj.toString())
-	        .contentType(ContentType.JSON)
-	        .log().all()
-        .when()
-				  .post("/register")
-			  .then()
-			    .log().all()
-			    .statusCode(HttpStatus.BAD_REQUEST.value())
-			    .extract().response().mvcResult();
+    final MvcResult response =
+        given()
+            .body(userJsonObj.toString())
+            .contentType(ContentType.JSON)
+            .log().all()
+          .when()
+            .post("/register")
+          .then()
+            .log().all()
+            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .extract().response().mvcResult();
 
-		logger.debug("Response: {}", response);
-		// @formatter:on
+    logger.debug("Response: {}", response);
+    // @formatter:on
   }
 }

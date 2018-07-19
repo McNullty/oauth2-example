@@ -9,11 +9,11 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  * Server. For reference you should check
  * {@link OAuth2AuthorizationServerConfiguration}.
  *
- * @author Mladen Čikara <mladen.cikara@gmail.com>
+ * @author mladen
  *
  */
 @Configuration
 @EnableAuthorizationServer
-public class OAuth2AuthorizationServerConfig /* extends AuthorizationServerConfigurerAdapter */ {
+public class OAuth2AuthorizationServerConfig {
 
 }

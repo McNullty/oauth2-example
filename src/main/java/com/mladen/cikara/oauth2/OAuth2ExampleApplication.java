@@ -6,13 +6,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * Entry point for application.
  *
- * @author Mladen Čikara <mladen.cikara@gmail.com>
+ * @author mladen
  *
  */
 @SpringBootApplication
 public class OAuth2ExampleApplication {
 
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
     SpringApplication.run(OAuth2ExampleApplication.class, args);
   }
 }

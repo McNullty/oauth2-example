@@ -9,6 +9,9 @@ import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUser
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.service.UserService;
 
+import io.restassured.http.ContentType;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
+
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,9 +26,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import io.restassured.http.ContentType;
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(RegisterAction.class)
@@ -42,14 +42,14 @@ public class RegisterActionTest {
   @Before
   public void setup() throws Exception {
     RestAssuredMockMvc.postProcessors(csrf().asHeader());
-    RestAssuredMockMvc.mockMvc(mockMvc);
+    RestAssuredMockMvc.mockMvc(this.mockMvc);
   }
 
   @Test
   @WithMockUser
   public void whenPostCorrectUserDataWithConfirmedPassword_thenCreated() throws Exception {
 
-    when(userServiceMock.registerUser(any(RegisterUserDto.class)))
+    when(this.userServiceMock.registerUser(any(RegisterUserDto.class)))
         .thenReturn(new User.Builder().password("password").build());
 
     final JSONObject jsonObj =

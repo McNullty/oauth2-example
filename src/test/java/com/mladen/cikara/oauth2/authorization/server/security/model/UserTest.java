@@ -15,7 +15,7 @@ public class UserTest {
         .lastName("Test")
         .authorities(Authority.ROLE_USER).build();
 
-    assertThat(user.getUUID()).isNotNull();
+    assertThat(user.getUuid()).isNotNull();
     assertThat(user.getAuthorities()).isNotEmpty();
   }
 

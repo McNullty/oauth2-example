@@ -8,6 +8,8 @@ import com.mladen.cikara.oauth2.authorization.server.security.service.Authorizat
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
 import com.palantir.docker.compose.DockerComposeRule;
 
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -27,8 +29,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
@@ -57,11 +57,11 @@ public class ChangePasswordActionTest {
   private AuthorizationsUtilService authorizationsUtilService;
 
   private User createNewUser() {
-    return authorizationsUtilService.createTempUserWithAuthorities(Authority.ROLE_USER);
+    return this.authorizationsUtilService.createTempUserWithAuthorities(Authority.ROLE_USER);
   }
 
-  private String getAuthorization(User user) throws Exception {
-    return authorizationsUtilService.getAuthorizationJWT(user);
+  private String getAuthorization(final User user) throws Exception {
+    return this.authorizationsUtilService.getAuthorizationJwt(user);
   }
 
   private String prepareChangePasswordDtoJsonObject() throws JSONException {
@@ -78,11 +78,14 @@ public class ChangePasswordActionTest {
     return jsonObj.toString();
   }
 
+  /**
+   * Setup test.
+   */
   @Before
   public void setup() throws Exception {
     logger.debug("Configuring RestAssuredMockMvc");
 
-    RestAssuredMockMvc.mockMvc(mockMvc);
+    RestAssuredMockMvc.mockMvc(this.mockMvc);
   }
 
   @Test

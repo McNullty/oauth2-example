@@ -24,7 +24,7 @@ public class DomainUserDetailsService implements UserDetailsService {
   @Autowired
   private UserRepository userRepository;
 
-  private UserDetails createSpringSecurityUser(User user) {
+  private UserDetails createSpringSecurityUser(final User user) {
 
     final SpringSecurityUserAdapter userDetails =
         new SpringSecurityUserAdapter(user);
@@ -33,8 +33,8 @@ public class DomainUserDetailsService implements UserDetailsService {
   }
 
   @Override
-  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    final Optional<User> user = userRepository.findByEmail(email);
+  public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
+    final Optional<User> user = this.userRepository.findByEmail(email);
 
     return user
         .map(u -> createSpringSecurityUser(u))

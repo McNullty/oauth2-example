@@ -16,6 +16,8 @@ import com.mladen.cikara.oauth2.authorization.server.security.service.Authorizat
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
 import com.palantir.docker.compose.DockerComposeRule;
 
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
@@ -41,12 +43,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
-
 /**
- * This integration test tests all user end points
+ * This integration test tests all user end points.
  *
- * @author Mladen Čikara mladen.cikara@gmail.com
+ * @author mladen
  *
  */
 @ActiveProfiles("test")
@@ -73,14 +73,15 @@ public class UserControllerIntTest {
   private AuthorizationsUtilService authorizationsUtilService;
 
   private User createNewUser() {
-    return authorizationsUtilService.createTempUserWithAuthorities(Authority.ROLE_USER);
+    return this.authorizationsUtilService.createTempUserWithAuthorities(Authority.ROLE_USER);
   }
 
-  private String getAuthorization(User user) throws Exception {
-    return authorizationsUtilService.getAuthorizationJWT(user);
+  private String getAuthorization(final User user) throws Exception {
+    return this.authorizationsUtilService.getAuthorizationJwt(user);
   }
 
-  private String prepareAuthorityDtoJsonObject(Authority... authorities) throws JSONException {
+  private String prepareAuthorityDtoJsonObject(final Authority... authorities)
+      throws JSONException {
     final Collection<String> authoritiesStrings = new HashSet<>();
 
     for (final Authority authority : authorities) {
@@ -113,45 +114,48 @@ public class UserControllerIntTest {
     return userJsonObj.toString();
   }
 
+  /**
+   * Setup test.
+   */
   @Before
   public void setup() throws Exception {
     logger.debug("Configuring RestAssuredMockMvc");
 
-    RestAssuredMockMvc.mockMvc(mockMvc);
+    RestAssuredMockMvc.mockMvc(this.mockMvc);
   }
 
   @Test
-  public void whenDeleteUserWithInvalidUUIDAndLoggedInAsAdminUser_thenNotFound() throws Exception {
-    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+  public void whenDeleteUserWithInvalidUuidAndLoggedInAsAdminUser_thenNotFound() throws Exception {
+    final String jwt = getAuthorization(this.authorizationsUtilService.getAdminUser());
 
     final String urlPath = "/user/" + UUID.randomUUID();
 
- // @formatter:off
+    // @formatter:off
     final MvcResult response =
         given()
-          .header("Authorization", "Bearer " + jwt)
-          .log().all()
-        .when()
-          .delete(urlPath)
-        .then()
-          .log().all()
-          .statusCode(HttpStatus.NOT_FOUND.value())
-          .extract().response()
-          .mvcResult();
+            .header("Authorization", "Bearer " + jwt)
+            .log().all()
+          .when()
+            .delete(urlPath)
+          .then()
+            .log().all()
+            .statusCode(HttpStatus.NOT_FOUND.value())
+            .extract().response()
+            .mvcResult();
     // @formatter:on
 
     logger.debug("Response: {}", response);
   }
 
   @Test
-  public void whenDeleteUserWithUUIDAndLoggedInAsAdminUser_thenNoContent() throws Exception {
+  public void whenDeleteUserWithUuidAndLoggedInAsAdminUser_thenNoContent() throws Exception {
     final User tempUser = createNewUser();
 
-    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+    final String jwt = getAuthorization(this.authorizationsUtilService.getAdminUser());
 
-    final String urlPath = "/user/" + tempUser.getUUID().toString();
+    final String urlPath = "/user/" + tempUser.getUuid().toString();
 
- // @formatter:off
+    // @formatter:off
     final MvcResult response =
         given()
           .header("Authorization", "Bearer " + jwt)
@@ -169,14 +173,14 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenDeleteUserWithUUIDAndLoggedInAsBasicUser_thenUnauthorized() throws Exception {
+  public void whenDeleteUserWithUuidAndLoggedInAsBasicUser_thenUnauthorized() throws Exception {
     final User tempUser = createNewUser();
 
-    final String jwt = getAuthorization(authorizationsUtilService.getBasicUser());
+    final String jwt = getAuthorization(this.authorizationsUtilService.getBasicUser());
 
-    final String urlPath = "/user/" + tempUser.getUUID().toString();
+    final String urlPath = "/user/" + tempUser.getUuid().toString();
 
- // @formatter:off
+    // @formatter:off
     final MvcResult response =
         given()
           .header("Authorization", "Bearer " + jwt)
@@ -194,7 +198,7 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenGetCurrentUserWhenLoggedIn_thenOK() throws Exception {
+  public void whenGetCurrentUserWhenLoggedIn_thenOk() throws Exception {
 
     final User user = createNewUser();
 
@@ -215,8 +219,8 @@ public class UserControllerIntTest {
           .body("email", equalTo(user.getEmail()))
           .body("firstName", equalTo(user.getFirstName()))
           .body("lastName", equalTo(user.getLastName()))
-          .body("uuid", equalTo(user.getUUID().toString()))
-          .body("_links.self.href", equalTo("http://localhost/user/" + user.getUUID().toString()))
+          .body("uuid", equalTo(user.getUuid().toString()))
+          .body("_links.self.href", equalTo("http://localhost/user/" + user.getUuid().toString()))
           .extract().response()
           .mvcResult();
     // @formatter:on
@@ -227,7 +231,7 @@ public class UserControllerIntTest {
   @Test
   public void whenGetCurrentUserWithoutBeingLoggedIn_thenUnauthorized() throws Exception {
     // @formatter:off
-    mockMvc
+    this.mockMvc
       .perform(get("/user/current"))
         .andDo(print())
         .andExpect(status().isUnauthorized());
@@ -235,12 +239,12 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenGetUserAuthortyAndLogggedInWithAdmin_ThenOK() throws Exception {
+  public void whenGetUserAuthortyAndLogggedInWithAdmin_ThenOk() throws Exception {
     final User tempUser = createNewUser();
 
-    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+    final String jwt = getAuthorization(this.authorizationsUtilService.getAdminUser());
 
-    final String urlPath = "/user/" + tempUser.getUUID().toString() + "/authority";
+    final String urlPath = "/user/" + tempUser.getUuid().toString() + "/authority";
 
     // @formatter:off
     final MvcResult response =
@@ -264,9 +268,9 @@ public class UserControllerIntTest {
   public void whenGetUserAuthortyAndLogggedInWithBasicUser_ThenUnauthorized() throws Exception {
     final User tempUser = createNewUser();
 
-    final String jwt = getAuthorization(authorizationsUtilService.getBasicUser());
+    final String jwt = getAuthorization(this.authorizationsUtilService.getBasicUser());
 
-    final String urlPath = "/user/" + tempUser.getUUID().toString() + "/authority";
+    final String urlPath = "/user/" + tempUser.getUuid().toString() + "/authority";
 
     // @formatter:off
     final MvcResult response =
@@ -303,8 +307,8 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenGetUserWhenLogggedInWithAdmin_ThenOK() throws Exception {
-    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+  public void whenGetUserWhenLogggedInWithAdmin_ThenOk() throws Exception {
+    final String jwt = getAuthorization(this.authorizationsUtilService.getAdminUser());
 
     final String urlPath = "/user";
 
@@ -344,7 +348,7 @@ public class UserControllerIntTest {
         .then()
           .log().all()
           .statusCode(HttpStatus.OK.value())
-          .body("content[0].uuid", equalTo(tempUser.getUUID().toString()))
+          .body("content[0].uuid", equalTo(tempUser.getUuid().toString()))
           .body("totalElements", equalTo(1))
           .extract().response()
           .mvcResult();
@@ -354,12 +358,12 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenGetUserWithExistingUUIDAndLogggedInWithAdmin_ThenOK() throws Exception {
+  public void whenGetUserWithExistingUuidAndLogggedInWithAdmin_ThenOk() throws Exception {
     final User tempUser = createNewUser();
 
-    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+    final String jwt = getAuthorization(this.authorizationsUtilService.getAdminUser());
 
-    final String urlPath = "/user/" + tempUser.getUUID().toString();
+    final String urlPath = "/user/" + tempUser.getUuid().toString();
 
     // @formatter:off
     final MvcResult response =
@@ -374,8 +378,8 @@ public class UserControllerIntTest {
           .body("email", equalTo(tempUser.getEmail()))
           .body("firstName", equalTo(tempUser.getFirstName()))
           .body("lastName", equalTo(tempUser.getLastName()))
-          .body("uuid", equalTo(tempUser.getUUID().toString()))
-          .body("_links.self.href", equalTo("http://localhost/user/" + tempUser.getUUID().toString()))
+          .body("uuid", equalTo(tempUser.getUuid().toString()))
+          .body("_links.self.href", equalTo("http://localhost/user/" + tempUser.getUuid().toString()))
           .extract().response()
           .mvcResult();
     // @formatter:on
@@ -384,9 +388,9 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenGetUserWithExistingUUIDAndLogggedInWithBasicUser_ThenUnauthorized()
+  public void whenGetUserWithExistingUuidAndLogggedInWithBasicUser_ThenUnauthorized()
       throws Exception {
-    final String jwt = getAuthorization(authorizationsUtilService.getBasicUser());
+    final String jwt = getAuthorization(this.authorizationsUtilService.getBasicUser());
 
     final String urlPath = "/user/" + UUID.randomUUID();
 
@@ -408,8 +412,8 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenGetUserWithInvalidUUIDAndLogggedInWithAdmin_ThenNotFound() throws Exception {
-    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+  public void whenGetUserWithInvalidUuidAndLogggedInWithAdmin_ThenNotFound() throws Exception {
+    final String jwt = getAuthorization(this.authorizationsUtilService.getAdminUser());
 
     final String urlPath = "/user/" + UUID.randomUUID();
 
@@ -431,8 +435,8 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenGetUserWithPageDefinedWhenLogggedInWithAdmin_ThenOK() throws Exception {
-    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+  public void whenGetUserWithPageDefinedWhenLogggedInWithAdmin_ThenOk() throws Exception {
+    final String jwt = getAuthorization(this.authorizationsUtilService.getAdminUser());
 
     final String urlPath = "/user?page=1&size=2";
 
@@ -456,14 +460,14 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenGetUserWithUUIDOfCurrentUser_ThenOK() throws Exception {
+  public void whenGetUserWithUuidOfCurrentUser_ThenOk() throws Exception {
     final User user = createNewUser();
 
     final String jwt = getAuthorization(user);
 
     logger.debug("Got authorization: {}", jwt);
 
-    final String urlPath = "/user/" + user.getUUID().toString();
+    final String urlPath = "/user/" + user.getUuid().toString();
 
     // @formatter:off
     final MvcResult response =
@@ -478,8 +482,8 @@ public class UserControllerIntTest {
           .body("email", equalTo(user.getEmail()))
           .body("firstName", equalTo(user.getFirstName()))
           .body("lastName", equalTo(user.getLastName()))
-          .body("uuid", equalTo(user.getUUID().toString()))
-          .body("_links.self.href", equalTo("http://localhost/user/" + user.getUUID().toString()))
+          .body("uuid", equalTo(user.getUuid().toString()))
+          .body("_links.self.href", equalTo("http://localhost/user/" + user.getUuid().toString()))
           .extract().response()
           .mvcResult();
     // @formatter:on
@@ -488,19 +492,19 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenPostAddAuthorityAsAdminUser_thenOK() throws Exception {
+  public void whenPostAddAuthorityAsAdminUser_thenOk() throws Exception {
     final User tempUser = createNewUser();
 
-    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+    final String jwt = getAuthorization(this.authorizationsUtilService.getAdminUser());
 
-    final String urlPath = "/user/" + tempUser.getUUID() + "/add-authority";
+    final String urlPath = "/user/" + tempUser.getUuid() + "/add-authority";
 
     final String authorityDtoJsonObject =
         prepareAuthorityDtoJsonObject(Authority.ROLE_ADMIN, Authority.ROLE_SYS_ADMIN);
 
     logger.debug("authorityDtoJsonObject: {}", authorityDtoJsonObject);
 
- // @formatter:off
+    // @formatter:off
     final MvcResult response =
         given()
           .header("Authorization", "Bearer " + jwt)
@@ -524,19 +528,19 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenPostRemoveAuthorityAsAdminUser_thenOK() throws Exception {
+  public void whenPostRemoveAuthorityAsAdminUser_thenOk() throws Exception {
     final User tempUser = createNewUser();
 
-    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+    final String jwt = getAuthorization(this.authorizationsUtilService.getAdminUser());
 
-    final String urlPath = "/user/" + tempUser.getUUID() + "/remove-authority";
+    final String urlPath = "/user/" + tempUser.getUuid() + "/remove-authority";
 
     final String authorityDtoJsonObject =
         prepareAuthorityDtoJsonObject(Authority.ROLE_USER, Authority.ROLE_SYS_ADMIN);
 
     logger.debug("authorityDtoJsonObject: {}", authorityDtoJsonObject);
 
- // @formatter:off
+    // @formatter:off
     final MvcResult response =
         given()
           .header("Authorization", "Bearer " + jwt)
@@ -557,8 +561,8 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenPutUserWithInvalidUUIDAndLoggedInAsAdminUser_thenNotFound() throws Exception {
-    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+  public void whenPutUserWithInvalidUuidAndLoggedInAsAdminUser_thenNotFound() throws Exception {
+    final String jwt = getAuthorization(this.authorizationsUtilService.getAdminUser());
 
     final String urlPath = "/user/" + UUID.randomUUID();
 
@@ -566,7 +570,7 @@ public class UserControllerIntTest {
     final String newLastName = "newLastName";
     final String updateJsonObject = prepareUpdateJsonObject(newFirstName, newLastName);
 
- // @formatter:off
+    // @formatter:off
     final MvcResult response =
         given()
           .header("Authorization", "Bearer " + jwt)
@@ -586,18 +590,18 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenPutUserWithUUIDAndLoggedInAsAdminUser_thenOK() throws Exception {
+  public void whenPutUserWithUuidAndLoggedInAsAdminUser_thenOk() throws Exception {
     final User tempUser = createNewUser();
 
-    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+    final String jwt = getAuthorization(this.authorizationsUtilService.getAdminUser());
 
-    final String urlPath = "/user/" + tempUser.getUUID().toString();
+    final String urlPath = "/user/" + tempUser.getUuid().toString();
 
     final String newFirstName = "newFirstName";
     final String newLastName = "newLastName";
     final String updateJsonObject = prepareUpdateJsonObject(newFirstName, newLastName);
 
- // @formatter:off
+    // @formatter:off
     final MvcResult response =
         given()
           .header("Authorization", "Bearer " + jwt)
@@ -612,7 +616,7 @@ public class UserControllerIntTest {
           .body("email", equalTo(tempUser.getEmail()))
           .body("firstName", equalTo(newFirstName))
           .body("lastName", equalTo(newLastName))
-          .body("uuid", equalTo(tempUser.getUUID().toString()))
+          .body("uuid", equalTo(tempUser.getUuid().toString()))
           .extract().response()
           .mvcResult();
     // @formatter:on
@@ -621,18 +625,18 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenPutUserWithUUIDAndLoggedInAsUserUser_thenUnauthorized() throws Exception {
+  public void whenPutUserWithUuidAndLoggedInAsUserUser_thenUnauthorized() throws Exception {
     final User tempUser = createNewUser();
 
-    final String jwt = getAuthorization(authorizationsUtilService.getAdminUser());
+    final String jwt = getAuthorization(this.authorizationsUtilService.getAdminUser());
 
-    final String urlPath = "/user/" + tempUser.getUUID().toString();
+    final String urlPath = "/user/" + tempUser.getUuid().toString();
 
     final String newFirstName = "newFirstName";
     final String newLastName = "newLastName";
     final String updateJsonObject = prepareUpdateJsonObject(newFirstName, newLastName);
 
- // @formatter:off
+    // @formatter:off
     final MvcResult response =
         given()
           .header("Authorization", "Bearer " + jwt)
@@ -647,7 +651,7 @@ public class UserControllerIntTest {
           .body("email", equalTo(tempUser.getEmail()))
           .body("firstName", equalTo(newFirstName))
           .body("lastName", equalTo(newLastName))
-          .body("uuid", equalTo(tempUser.getUUID().toString()))
+          .body("uuid", equalTo(tempUser.getUuid().toString()))
           .extract().response()
           .mvcResult();
     // @formatter:on
@@ -656,18 +660,18 @@ public class UserControllerIntTest {
   }
 
   @Test
-  public void whenPutUserWithUUIDOfCurrentUser_thenOK() throws Exception {
+  public void whenPutUserWithUuidOfCurrentUser_thenOk() throws Exception {
     final User tempUser = createNewUser();
 
     final String jwt = getAuthorization(tempUser);
 
-    final String urlPath = "/user/" + tempUser.getUUID().toString();
+    final String urlPath = "/user/" + tempUser.getUuid().toString();
 
     final String newFirstName = "newFirstName";
     final String newLastName = "newLastName";
     final String updateJsonObject = prepareUpdateJsonObject(newFirstName, newLastName);
 
- // @formatter:off
+    // @formatter:off
     final MvcResult response =
         given()
           .header("Authorization", "Bearer " + jwt)
@@ -682,7 +686,7 @@ public class UserControllerIntTest {
           .body("email", equalTo(tempUser.getEmail()))
           .body("firstName", equalTo(newFirstName))
           .body("lastName", equalTo(newLastName))
-          .body("uuid", equalTo(tempUser.getUUID().toString()))
+          .body("uuid", equalTo(tempUser.getUuid().toString()))
           .extract().response()
           .mvcResult();
     // @formatter:on

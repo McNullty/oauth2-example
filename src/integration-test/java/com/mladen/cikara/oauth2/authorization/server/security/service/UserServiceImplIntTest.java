@@ -3,8 +3,8 @@ package com.mladen.cikara.oauth2.authorization.server.security.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
-import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
+import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
 import com.palantir.docker.compose.DockerComposeRule;
@@ -54,9 +54,9 @@ public class UserServiceImplIntTest {
         .passwordConfirmation("password")
         .build();
 
-    userService.registerUser(userDto);
+    this.userService.registerUser(userDto);
 
-    final Optional<User> createdUser = userRepository.findByEmail("test@test.com");
+    final Optional<User> createdUser = this.userRepository.findByEmail("test@test.com");
 
     assertThat(createdUser.get().getAuthorities()).contains(Authority.ROLE_USER);
   }

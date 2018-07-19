@@ -20,9 +20,15 @@ public class RegisterUserDto {
     private String firstName;
     private String lastName;
 
+    /**
+     * Creates new instance RegisterUserDto object but checks that passwords are correct and equal.
+     *
+     * @return RegisterUserDto object
+     */
     public RegisterUserDto build() {
-      if (password == null || passwordConfirmation == null || password.isEmpty()
-          || passwordConfirmation.isEmpty() || !password.equals(passwordConfirmation)) {
+      if (this.password == null || this.passwordConfirmation == null || this.password.isEmpty()
+          || this.passwordConfirmation.isEmpty()
+          || !this.password.equals(this.passwordConfirmation)) {
 
         throw new PasswordsDontMatchException("Passwords not set");
       }
@@ -30,40 +36,42 @@ public class RegisterUserDto {
       return new RegisterUserDto(this);
     }
 
-    public Builder email(String email) {
+    public Builder email(final String email) {
       this.email = email;
       return this;
     }
 
-    public Builder firstName(String firstName) {
+    public Builder firstName(final String firstName) {
       this.firstName = firstName;
       return this;
     }
 
-    public Builder lastName(String lastName) {
+    public Builder lastName(final String lastName) {
       this.lastName = lastName;
       return this;
     }
 
     /**
+     * Set clear password.
      *
      * @param password
      *          Clear text password
-     * @return
+     * @return builder
      */
-    public Builder password(String password) {
+    public Builder password(final String password) {
       this.password = password;
       return this;
     }
 
     /**
+     * Confirmation for clear password.
      *
      * @param password
      *          Clear text password
-     * @return
+     * @return builder
      */
-    public Builder passwordConfirmation(String password) {
-      passwordConfirmation = password;
+    public Builder passwordConfirmation(final String password) {
+      this.passwordConfirmation = password;
       return this;
     }
   }
@@ -88,20 +96,43 @@ public class RegisterUserDto {
   @NotBlank
   private final String passwordConfirmation;
 
-  public RegisterUserDto(Builder builder) {
-    email = builder.email;
-    firstName = builder.firstName;
-    lastName = builder.lastName;
-    password = builder.password;
-    passwordConfirmation = builder.passwordConfirmation;
+  /**
+   * Creates object using bulder.
+   *
+   * @param builder
+   *          Instance of builder that was configured for new object.
+   */
+  public RegisterUserDto(final Builder builder) {
+    this.email = builder.email;
+    this.firstName = builder.firstName;
+    this.lastName = builder.lastName;
+    this.password = builder.password;
+    this.passwordConfirmation = builder.passwordConfirmation;
   }
 
   @JsonCreator
-  RegisterUserDto(@Email @NotNull @JsonProperty("email") String email,
-      @Size(max = 50) @NotBlank @JsonProperty("firstName") String firstName,
-      @Size(max = 50) @NotBlank @JsonProperty("lastName") String lastName,
-      @Size(max = 50) @NotBlank @JsonProperty("password") String password,
-      @Size(max = 50) @NotBlank @JsonProperty("passwordConfirmation") String passwordConfirmation) {
+  RegisterUserDto(
+      @Email
+      @NotNull
+      @JsonProperty("email")
+      final String email,
+      @Size(max = 50)
+      @NotBlank
+      @JsonProperty("firstName")
+      final String firstName,
+      @Size(max = 50)
+      @NotBlank
+      @JsonProperty("lastName")
+      final String lastName,
+      @Size(max = 50)
+      @NotBlank
+      @JsonProperty("password")
+      final String password,
+      @Size(max = 50)
+      @NotBlank
+      @JsonProperty("passwordConfirmation")
+      final String passwordConfirmation) {
+
     super();
     this.email = email;
     this.firstName = firstName;
@@ -111,7 +142,7 @@ public class RegisterUserDto {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
     }
@@ -122,47 +153,48 @@ public class RegisterUserDto {
       return false;
     }
     final RegisterUserDto other = (RegisterUserDto) obj;
-    if (email == null) {
+    if (this.email == null) {
       if (other.email != null) {
         return false;
       }
-    } else if (!email.equals(other.email)) {
+    } else if (!this.email.equals(other.email)) {
       return false;
     }
     return true;
   }
 
   public String getEmail() {
-    return email;
+    return this.email;
   }
 
   public String getFirstName() {
-    return firstName;
+    return this.firstName;
   }
 
   public String getLastName() {
-    return lastName;
+    return this.lastName;
   }
 
   public String getPassword() {
-    return password;
+    return this.password;
   }
 
   public String getPasswordConfirmation() {
-    return passwordConfirmation;
+    return this.passwordConfirmation;
   }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((email == null) ? 0 : email.hashCode());
+    result = prime * result + (this.email == null ? 0 : this.email.hashCode());
     return result;
   }
 
   @Override
   public String toString() {
-    return "UserDto [email=" + email + ", firstName=" + firstName + ", lastName=" + lastName + "]";
+    return "UserDto [email=" + this.email + ", firstName=" + this.firstName + ", lastName="
+        + this.lastName + "]";
   }
 
 }

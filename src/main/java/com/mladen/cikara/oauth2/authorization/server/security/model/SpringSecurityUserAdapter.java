@@ -7,18 +7,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- * Custom implementation of
- * {@link org.springframework.security.core.userdetails.User}
+ * Custom implementation of {@link org.springframework.security.core.userdetails.User}.
  *
- * @author Mladen Čikara mladen.cikara@gmail.com
+ * @author mladen
  *
  */
 public class SpringSecurityUserAdapter
     implements UserDetails, CredentialsContainer {
 
-  /**
-   *
-   */
   private static final long serialVersionUID = 2727303042199106548L;
 
   private final User user;
@@ -27,12 +23,18 @@ public class SpringSecurityUserAdapter
   private final boolean credentialsNonExpired;
   private final boolean enabled;
 
-  public SpringSecurityUserAdapter(User user) {
+  /**
+   * Creates object that implements UserDetals interface that is used by Spring Security.
+   *
+   * @param user
+   *          Domain User object
+   */
+  public SpringSecurityUserAdapter(final User user) {
     this.user = user;
-    enabled = true;
-    accountNonExpired = true;
-    credentialsNonExpired = true;
-    accountNonLocked = true;
+    this.enabled = true;
+    this.accountNonExpired = true;
+    this.credentialsNonExpired = true;
+    this.accountNonLocked = true;
   }
 
   @Override
@@ -42,47 +44,48 @@ public class SpringSecurityUserAdapter
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return user.getAuthorities();
+    return this.user.getAuthorities();
   }
 
   @Override
   public String getPassword() {
-    return user.getPassword();
+    return this.user.getPassword();
   }
 
   public User getUser() {
-    return user;
+    return this.user;
   }
 
   @Override
   public String getUsername() {
-    return user.getEmail();
+    return this.user.getEmail();
   }
 
   @Override
   public boolean isAccountNonExpired() {
-    return accountNonExpired;
+    return this.accountNonExpired;
   }
 
   @Override
   public boolean isAccountNonLocked() {
-    return accountNonLocked;
+    return this.accountNonLocked;
   }
 
   @Override
   public boolean isCredentialsNonExpired() {
-    return credentialsNonExpired;
+    return this.credentialsNonExpired;
   }
 
   @Override
   public boolean isEnabled() {
-    return enabled;
+    return this.enabled;
   }
 
   @Override
   public String toString() {
-    return "SpringSecurityUserAdapter [user=" + user + ", accountNonExpired=" + accountNonExpired
-        + ", accountNonLocked=" + accountNonLocked + ", credentialsNonExpired="
-        + credentialsNonExpired + ", enabled=" + enabled + "]";
+    return "SpringSecurityUserAdapter [user=" + this.user + ", accountNonExpired="
+        + this.accountNonExpired
+        + ", accountNonLocked=" + this.accountNonLocked + ", credentialsNonExpired="
+        + this.credentialsNonExpired + ", enabled=" + this.enabled + "]";
   }
 }

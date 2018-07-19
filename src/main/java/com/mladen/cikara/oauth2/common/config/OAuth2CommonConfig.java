@@ -10,11 +10,10 @@ import org.springframework.security.oauth2.provider.token.UserAuthenticationConv
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
 /**
- * This configuration should be present on both Authorization server and
- * Resource server and it should be synchronized between servers (same values on
- * both servers).
+ * This configuration should be present on both Authorization server and Resource server and it
+ * should be synchronized between servers (same values on both servers).
  *
- * @author Mladen Čikara <mladen.cikara@gmail.com>
+ * @author mladen
  *
  */
 @Configuration
@@ -23,21 +22,31 @@ public class OAuth2CommonConfig {
   @Autowired
   private UserDetailsService userDetailsService;
 
+  /**
+   * Configuring Access Token Converter used by OAuth2.
+   *
+   * @return
+   */
   @Bean
   public JwtAccessTokenConverter accessTokenConverter() {
     final JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-    jwtAccessTokenConverter.setSigningKey("some_key"); // TODO change key
+    jwtAccessTokenConverter.setSigningKey("some_key"); // TODO change key, Put in configuration
     ((DefaultAccessTokenConverter) jwtAccessTokenConverter.getAccessTokenConverter())
         .setUserTokenConverter(userAuthenticationConverter());
 
     return jwtAccessTokenConverter;
   }
 
+  /**
+   * Configuring User Authentication Converter used by OAuth2.
+   * 
+   * @return
+   */
   @Bean
   public UserAuthenticationConverter userAuthenticationConverter() {
     final DefaultUserAuthenticationConverter defaultUserAuthenticationConverter =
         new DefaultUserAuthenticationConverter();
-    defaultUserAuthenticationConverter.setUserDetailsService(userDetailsService);
+    defaultUserAuthenticationConverter.setUserDetailsService(this.userDetailsService);
     return defaultUserAuthenticationConverter;
   }
 

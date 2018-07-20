@@ -11,6 +11,24 @@
 
 	<name>oauth2-example</name>
 	<description>OAuth2 example with Spring Boot</description>
+	<url>https://github.com/McNullty/oauth2-example/blob/master/Readme.md</url>
+	<scm>
+		<url>https://github.com/McNullty/oauth2-example</url>
+	</scm>
+
+	<developers>
+		<developer>
+			<id>mladen</id>
+			<name>Mladen Čikara</name>
+			<email>mladen.cikara@gmail.com</email>
+			<url>http://github.com/mcnullty</url>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>Europe/Zagreb</timezone>
+		</developer>
+	</developers>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

@@ -5,6 +5,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import com.mladen.cikara.oauth2.resource.server.controller.UserController;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -43,11 +44,41 @@ public class UserResource extends ResourceSupport {
     this.authorities = user.getAuthorities();
 
     final Link selfLink =
-        linkTo(methodOn(UserController.class).getUser(user.getUuid().toString(),
+        linkTo(methodOn(UserController.class).getUser(this.uuid.toString(),
             new SpringSecurityUserAdapter(user)))
                 .withSelfRel().withDeprecation("Direct access to user entity");
 
     add(selfLink);
+
+    final Link addUserAuthoritiesLink = linkTo(methodOn(UserController.class)
+        .addUserAuthorities(this.uuid.toString(), new AuthorityDto(new HashSet<>()),
+            new SpringSecurityUserAdapter(user)))
+                .withRel("addUserAuthority")
+                .withDeprecation("Add user authorities. You need admin role to access.");
+
+    add(addUserAuthoritiesLink);
+
+    final Link removeUserAuthoritiesLink = linkTo(methodOn(UserController.class)
+        .removeUserAuthorities(this.uuid.toString(), new AuthorityDto(new HashSet<>()),
+            new SpringSecurityUserAdapter(user)))
+                .withRel("removeUserAuthorities")
+                .withDeprecation("Remove user authorities. You need admin role to access.");
+
+    add(removeUserAuthoritiesLink);
+
+    final Link getUserAuthorityLink = linkTo(methodOn(UserController.class)
+        .getUserAuthority(this.uuid.toString(), new SpringSecurityUserAdapter(user)))
+            .withRel("getUserAuthority")
+            .withDeprecation("Get list of authorities for user. You need admin role to access.");
+
+    add(getUserAuthorityLink);
+
+    final Link currentUserLink = linkTo(methodOn(UserController.class)
+        .currentUser(new SpringSecurityUserAdapter(user)))
+            .withRel("currentUser")
+            .withDeprecation("Get currently logged in user");
+
+    add(currentUserLink);
 
     final Link allUsersLink =
         linkTo(methodOn(UserController.class).getUsers(PageRequest.of(0, 1),

@@ -151,6 +151,35 @@ public class RegisterActionIntTest {
   }
 
   @Test
+  public void whenPostEmptyEmail_thenBadRequest() throws Exception {
+    final JSONObject jsonObj =
+        new JSONObject()
+            .put("email", "")
+            .put("firstName", "TestName")
+            .put("lastName", "TestSurname")
+            .put("password", "secret")
+            .put("passwordConfirmation", "secret");
+
+    final JSONObject userJsonObj = new JSONObject().put("user", jsonObj);
+
+    // @formatter:off
+    final MvcResult response =
+        given()
+          .body(userJsonObj.toString())
+          .contentType(ContentType.JSON)
+          .log().all()
+        .when()
+          .post("/register")
+        .then()
+          .log().all()
+          .statusCode(HttpStatus.BAD_REQUEST.value())
+          .extract().response().mvcResult();
+
+    logger.debug("Response: {}", response);
+    // @formatter:on
+  }
+
+  @Test
   public void whenPostFieldWitheEmptyString_thenBadRequest() throws Exception {
     final JSONObject jsonObj =
         new JSONObject()

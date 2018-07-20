@@ -77,7 +77,7 @@ public class RegisterUserDto {
   }
 
   @Email
-  @NotNull
+  @NotBlank
   private final String email;
 
   @Size(max = 50)

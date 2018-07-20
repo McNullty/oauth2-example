@@ -16,7 +16,7 @@ import org.springframework.hateoas.ResourceSupport;
 /**
  * This is object that will be returned by REST API.
  *
- * @author Mladen Čikara mladen.cikara@gmail.com
+ * @author mladen
  *
  */
 public class UserResource extends ResourceSupport {

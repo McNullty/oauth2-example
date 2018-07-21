@@ -44,19 +44,36 @@ public class UserController {
   private final UserRepository userRepository;
   private final UserService userService;
 
-  public UserController(UserRepository userRepository, UserService userService) {
+  public UserController(final UserRepository userRepository, final UserService userService) {
     this.userRepository = userRepository;
     this.userService = userService;
   }
 
+  /**
+   * End point for adding one ore more Authorities to user.
+   *
+   * @param uuid
+   *          UUID of user that is to be changed
+   * @param authorityDto
+   *          List of authorities to be added to user
+   * @param currentUserAdaptor
+   *          Logged in user form authorization
+   * @return
+   */
   @PostMapping("/{uuid}/add-authority")
-  public ResponseEntity<AuthorityDto> addUserAuthorities(@PathVariable String uuid,
-      @Valid @RequestBody AuthorityDto authorityDto,
-      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
+  public ResponseEntity<AuthorityDto> addUserAuthorities(
+      @PathVariable
+      final String uuid,
+      @Valid
+      @RequestBody
+      final AuthorityDto authorityDto,
+      @AuthenticationPrincipal
+      final SpringSecurityUserAdapter currentUserAdaptor) {
     logger.trace("AuthortyDto: {}", authorityDto);
 
     if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
-      final AuthorityDto authorityDtoResponse = userService.addUserAuthorities(uuid, authorityDto);
+      final AuthorityDto authorityDtoResponse =
+          this.userService.addUserAuthorities(uuid, authorityDto);
       return ResponseEntity.ok(authorityDtoResponse);
     }
 
@@ -64,26 +81,29 @@ public class UserController {
   }
 
   /**
-   * Checks if currently logged in user has UUID same as requested
+   * Checks if currently logged in user has UUID same as requested.
    *
    * @param uuid
+   *          Uuid of user that will be changed
    * @param currentUser
+   *          Logged in user
    * @return
    */
-  private boolean checkIsUUIDFromCurrentUser(String uuid, User currentUser) {
+  private boolean checkIsUuidFromCurrentUser(final String uuid, final User currentUser) {
 
-    final String uuidForCurrentUser = currentUser.getUUID().toString();
+    final String uuidForCurrentUser = currentUser.getUuid().toString();
 
     return uuidForCurrentUser.equals(uuid);
   }
 
   /**
-   * Checks if current user has ADMIN_ROLE
+   * Checks if current user has ADMIN_ROLE.
    *
    * @param user
+   *          Logged in user
    * @return
    */
-  private boolean checkUserHasAdminRole(User user) {
+  private boolean checkUserHasAdminRole(final User user) {
     return user.getAuthorities().contains(Authority.ROLE_ADMIN);
   }
 
@@ -100,7 +120,7 @@ public class UserController {
   }
 
   private Page<UserResource> createPageWithOnlyCurrentUser(
-      SpringSecurityUserAdapter currentUserAdaptor) {
+      final SpringSecurityUserAdapter currentUserAdaptor) {
     final List<UserResource> content = new ArrayList<>();
     content.add(new UserResource(currentUserAdaptor.getUser()));
 
@@ -108,29 +128,48 @@ public class UserController {
     return userResourcePage;
   }
 
-  private ResponseEntity<UserResource> createResponseEntityFromUser(User user) {
+  private ResponseEntity<UserResource> createResponseEntityFromUser(final User user) {
     final UserResource userResource = new UserResource(user);
 
     return ResponseEntity.ok(userResource);
   }
 
+  /**
+   * End point for getting currently logged in user data.
+   *
+   * @param currentUserAdaptor
+   *          Logged in user
+   * @return
+   */
   @GetMapping(path = "/current")
   public ResponseEntity<UserResource> currentUser(
-      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
+      @AuthenticationPrincipal
+      final SpringSecurityUserAdapter currentUserAdaptor) {
     logger.debug("Authentication principal: {}", currentUserAdaptor);
 
     return createResponseEntityFromUser(currentUserAdaptor.getUser());
   }
 
+  /**
+   * End point for deleting user with given uuid.
+   *
+   * @param uuid
+   *          UUID of user we want to delete
+   * @param currentUserAdaptor
+   *          Logged in user
+   * @return
+   */
   @DeleteMapping(path = "/{uuid}")
-  public ResponseEntity<Object> deleteUser(@PathVariable String uuid,
-      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor)
-      throws EntityNotFoundException {
+  public ResponseEntity<Object> deleteUser(
+      @PathVariable
+      final String uuid,
+      @AuthenticationPrincipal
+      final SpringSecurityUserAdapter currentUserAdaptor) {
     if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
 
       logger.debug("deleting user: {}", uuid);
 
-      userService.deleteUser(uuid);
+      this.userService.deleteUser(uuid);
 
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -138,20 +177,32 @@ public class UserController {
     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
   }
 
+  /**
+   * End point that returns user data for given uuid.
+   *
+   * @param uuid
+   *          UUID of user want to check
+   * @param currentUserAdaptor
+   *          Logged in user
+   * @return
+   */
   @GetMapping(path = "/{uuid}")
-  public ResponseEntity<UserResource> getUser(@PathVariable String uuid,
-      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
+  public ResponseEntity<UserResource> getUser(
+      @PathVariable
+      final String uuid,
+      @AuthenticationPrincipal
+      final SpringSecurityUserAdapter currentUserAdaptor) {
 
     logger.debug("Authentication principal: {}", currentUserAdaptor);
 
     final User currentUser = currentUserAdaptor.getUser();
 
-    if (checkIsUUIDFromCurrentUser(uuid, currentUser)) {
+    if (checkIsUuidFromCurrentUser(uuid, currentUser)) {
       return createResponseEntityFromUser(currentUser);
     }
 
     if (checkUserHasAdminRole(currentUser)) {
-      final Optional<User> user = userRepository.findByUuid(UUID.fromString(uuid));
+      final Optional<User> user = this.userRepository.findByUuid(UUID.fromString(uuid));
 
       if (user.isPresent()) {
         return createResponseEntityFromUser(user.get());
@@ -163,31 +214,51 @@ public class UserController {
     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
   }
 
+  /**
+   * End point for listing all authorities for user.
+   *
+   * @param uuid
+   *          UUID of user we want to check authority
+   * @param currentUserAdaptor
+   *          currently logged in user
+   * @return
+   */
   @GetMapping(path = "/{uuid}/authority")
-  public ResponseEntity<AuthorityDto> getUserAuthority(@PathVariable String uuid,
-      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
-    final Optional<User> user = userRepository.findByUuid(UUID.fromString(uuid));
+  public ResponseEntity<AuthorityDto> getUserAuthority(
+      @PathVariable
+      final String uuid,
+      @AuthenticationPrincipal
+      final SpringSecurityUserAdapter currentUserAdaptor) {
+    final Optional<User> user = this.userRepository.findByUuid(UUID.fromString(uuid));
 
-    if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
-      if (user.isPresent()) {
-        return ResponseEntity
-            .ok(new AuthorityDto(user.get().getAuthorities()));
-      }
+    if (checkUserHasAdminRole(currentUserAdaptor.getUser()) && user.isPresent()) {
+      return ResponseEntity
+          .ok(new AuthorityDto(user.get().getAuthorities()));
     }
 
     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
   }
 
+  /**
+   * List of all users. Pageable.
+   *
+   * @param page
+   *          Page we want to get
+   * @param currentUserAdaptor
+   *          Currently logged in user
+   * @return
+   */
   @GetMapping
-  public ResponseEntity<Page<UserResource>> getUsers(Pageable page,
-      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
+  public ResponseEntity<Page<UserResource>> getUsers(final Pageable page,
+      @AuthenticationPrincipal
+      final SpringSecurityUserAdapter currentUserAdaptor) {
 
     logger.debug("Authentication principal: {}", currentUserAdaptor);
 
     if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
 
-      final Page<User> userPage = userService.findAllUsers(page);
+      final Page<User> userPage = this.userService.findAllUsers(page);
 
       logger.trace("Got page {}:", userPage);
 
@@ -205,39 +276,72 @@ public class UserController {
     }
   }
 
+  /**
+   * Removes authority from user with given UUID.
+   *
+   * @param uuid
+   *          UUID of user that is to be changed
+   * @param authorityDto
+   *          List of authorities that will be removed
+   * @param currentUserAdaptor
+   *          Currently logged in user
+   * @return
+   */
   @PostMapping("/{uuid}/remove-authority")
-  public ResponseEntity<AuthorityDto> removeUserAuthorities(@PathVariable String uuid,
-      @Valid @RequestBody AuthorityDto authorityDto,
-      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
+  public ResponseEntity<AuthorityDto> removeUserAuthorities(
+      @PathVariable
+      final String uuid,
+      @Valid
+      @RequestBody
+      final AuthorityDto authorityDto,
+      @AuthenticationPrincipal
+      final SpringSecurityUserAdapter currentUserAdaptor) {
     logger.trace("AuthortyDto: {}", authorityDto);
 
     if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
       final AuthorityDto authorityDtoResponse =
-          userService.removeUserAuthorities(uuid, authorityDto);
+          this.userService.removeUserAuthorities(uuid, authorityDto);
       return ResponseEntity.ok(authorityDtoResponse);
     }
 
     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
   }
 
-  private ResponseEntity<UserResource> updateUser(String uuid, @Valid UpdateUserDto userDto)
+  private ResponseEntity<UserResource> updateUser(final String uuid,
+      @Valid
+      final UpdateUserDto userDto)
       throws EntityNotFoundException {
-    final User updatedUser = userService.updateUser(uuid, userDto);
+    final User updatedUser = this.userService.updateUser(uuid, userDto);
 
     final UserResource updatedUserResource = new UserResource(updatedUser);
 
     return ResponseEntity.ok(updatedUserResource);
   }
 
+  /**
+   * Update user data.
+   *
+   * @param uuid
+   *          UUID for user that is to be changed
+   * @param userDto
+   *          DTO with changes to user data
+   * @param currentUserAdaptor
+   *          Currently logged in user
+   * @return
+   */
   @PutMapping(path = "/{uuid}")
-  public ResponseEntity<UserResource> updateUser(@PathVariable String uuid,
-      @Valid @RequestBody UpdateUserDto userDto,
-      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor)
-      throws EntityNotFoundException {
+  public ResponseEntity<UserResource> updateUser(
+      @PathVariable
+      final String uuid,
+      @Valid
+      @RequestBody
+      final UpdateUserDto userDto,
+      @AuthenticationPrincipal
+      final SpringSecurityUserAdapter currentUserAdaptor) {
     logger.debug("Authentication principal: {}", currentUserAdaptor);
     logger.debug("UpdateUserDto: {}", userDto);
 
-    if (checkIsUUIDFromCurrentUser(uuid, currentUserAdaptor.getUser())) {
+    if (checkIsUuidFromCurrentUser(uuid, currentUserAdaptor.getUser())) {
       return updateUser(uuid, userDto);
     }
 
@@ -247,23 +351,4 @@ public class UserController {
 
     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
   }
-
-  /*
-// @formatter:off
-  @PutMapping(path = "/{uuid}/authority")
-  public ResponseEntity<UserResource> updateUserAuthority(@PathVariable String uuid,
-      @Valid @RequestBody UpdateUserAuthorityDto userAuthortyDto,
-      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor)
-      throws EntityNotFoundException {
-    logger.debug("Authentication principal: {}", currentUserAdaptor);
-    logger.debug("UpdateUserDto: {}", userAuthortyDto);
-
-    if (checkUserHasAdminRole(currentUserAdaptor.getUser())) {
-      return updateUserAuthorty(uuid, userAuthortyDto);
-    }
-
-    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-  }
-// @formatter:on
-  */
 }

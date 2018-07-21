@@ -17,7 +17,7 @@ public class DockerComposeRuleUtil {
   private static final String DOCKER_CONTINER_NAME = "testdb";
 
   /**
-   * Returns Docker Compose rule that will be used in integration tests
+   * Returns Docker Compose rule that will be used in integration tests.
    *
    * @return DockerComposeRule
    */
@@ -26,7 +26,13 @@ public class DockerComposeRuleUtil {
         .waitingForService(DOCKER_CONTINER_NAME, HealthChecks.toHaveAllPortsOpen()).build();
   }
 
-  public static void setDatabaseUrlProperty(DockerComposeRule docker) {
+  /**
+   * Sets database property for docker compose rule.
+   *
+   * @param docker
+   *          Docker compose rule
+   */
+  public static void setDatabaseUrlProperty(final DockerComposeRule docker) {
     final DockerPort postgresPort =
         docker.containers().container(DOCKER_CONTINER_NAME).port(DOCKER_INTERNAL_PORT);
 

@@ -6,12 +6,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class WrongPasswordsException extends RuntimeException {
 
-  /**
-   *
-   */
   private static final long serialVersionUID = 7142178498433556438L;
 
-  public WrongPasswordsException(String message) {
+  public WrongPasswordsException(final String message) {
     super(message);
   }
 }

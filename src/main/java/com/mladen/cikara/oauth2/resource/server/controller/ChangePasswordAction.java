@@ -21,16 +21,29 @@ public class ChangePasswordAction {
 
   private final UserService userService;
 
-  public ChangePasswordAction(UserService userService) {
+  public ChangePasswordAction(final UserService userService) {
     this.userService = userService;
   }
 
+  /**
+   * End point for changing password.
+   *
+   * @param changePasswordDto
+   *          Object created from json object
+   * @param currentUserAdaptor
+   *          Current User extracted from authentication
+   * @return
+   */
   @PostMapping("/change-password")
-  public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto,
-      @AuthenticationPrincipal SpringSecurityUserAdapter currentUserAdaptor) {
+  public ResponseEntity<?> changePassword(
+      @Valid
+      @RequestBody
+      final ChangePasswordDto changePasswordDto,
+      @AuthenticationPrincipal
+      final SpringSecurityUserAdapter currentUserAdaptor) {
     logger.trace("Changing password");
 
-    userService.changePassword(currentUserAdaptor.getUser().getId(), changePasswordDto);
+    this.userService.changePassword(currentUserAdaptor.getUser().getId(), changePasswordDto);
 
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

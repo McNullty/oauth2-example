@@ -54,9 +54,9 @@ public class TestControllerWithMockMvcIntTest {
   private AuthorizationsUtilService authorizationsUtilService;
 
   private String getJwt() throws Exception {
-    final User user = authorizationsUtilService.getBasicUser();
+    final User user = this.authorizationsUtilService.getBasicUser();
 
-    final String jwt = authorizationsUtilService.getAuthorizationJWT(user);
+    final String jwt = this.authorizationsUtilService.getAuthorizationJwt(user);
 
     return jwt;
   }
@@ -71,13 +71,13 @@ public class TestControllerWithMockMvcIntTest {
       logger.debug("JWT {}", jwt);
 
       // @formatter:off
-			mockMvc
-			  .perform(get("/actuator/health")
-			      .header("Authorization", "Bearer " + jwt))
-			      .andDo(print())
-			      .andExpect(status().isOk())
-			      .andExpect(jsonPath("$.status", is("UP")));
-			// @formatter:on
+      this.mockMvc
+          .perform(get("/actuator/health")
+              .header("Authorization", "Bearer " + jwt))
+          .andDo(print())
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.status", is("UP")));
+      // @formatter:on
     } catch (final Exception e) {
       fail("Failed getting JWT. {}", e.getMessage());
     }
@@ -86,11 +86,11 @@ public class TestControllerWithMockMvcIntTest {
   @Test
   public void whenGetActuatorHealthWithNoAuthentication_thenUnauthorized() throws Exception {
     // @formatter:off
-		mockMvc
-		  .perform(get("/actuator/health"))
-		    .andDo(print())
-		    .andExpect(status().isUnauthorized());
-		// @formatter:on
+    this.mockMvc
+        .perform(get("/actuator/health"))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
+    // @formatter:on
   }
 
   @Test
@@ -101,33 +101,33 @@ public class TestControllerWithMockMvcIntTest {
     logger.debug("JWT {}", jwt);
 
     // @formatter:off
-		mockMvc
-		  .perform(get("/private")
-		      .header("Authorization", "Bearer " + jwt))
-		      .andDo(print())
-		      .andExpect(status().isOk())
-		      .andExpect(content().string(containsString("Hello from the private side")));
-		// @formatter:on
+    this.mockMvc
+        .perform(get("/private")
+            .header("Authorization", "Bearer " + jwt))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("Hello from the private side")));
+    // @formatter:on
   }
 
   @Test
   public void whenGetPrivateHomeWithNoAuthentication_thenUnauthorized() throws Exception {
     // @formatter:off
-		mockMvc
-		  .perform(get("/private"))
-		  .andDo(print())
-		  .andExpect(status().isUnauthorized());
-		// @formatter:on
+    this.mockMvc
+        .perform(get("/private"))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
+    // @formatter:on
   }
 
   @Test
   public void whenGetPublicHomeWithNoAuthentication_thenOk() throws Exception {
     // @formatter:off
-		mockMvc
-		  .perform(get("/public"))
-		  .andDo(print())
-		  .andExpect(status().isOk())
-		  .andExpect(content().string(containsString("Hello from the public side")));
-		// @formatter:on
+    this.mockMvc
+        .perform(get("/public"))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("Hello from the public side")));
+    // @formatter:on
   }
 }

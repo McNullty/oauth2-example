@@ -10,15 +10,14 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /**
- * Builder for creating request to get JWD token from OAuth2 Autorization
- * server.
+ * Builder for creating request to get JWD token from OAuth2 Autorization server.
  *
- * @author Mladen Čikara <mladen.cikara@gmail.com>
+ * @author mladen
  *
  */
 public class OAuth2AuthorizationBuilder {
 
-  public static OAuth2AuthorizationBuilder oauth2Request(MockMvc mockMvc) {
+  public static OAuth2AuthorizationBuilder oauth2Request(final MockMvc mockMvc) {
     return new OAuth2AuthorizationBuilder(mockMvc);
   }
 
@@ -38,39 +37,66 @@ public class OAuth2AuthorizationBuilder {
 
   private final MockMvc mockMvc;
 
-  OAuth2AuthorizationBuilder(MockMvc mockMvc) {
+  OAuth2AuthorizationBuilder(final MockMvc mockMvc) {
     this.mockMvc = mockMvc;
   }
 
-  public OAuth2AuthorizationBuilder accessTokenUrl(String accessTokenUrl) {
+  /**
+   * Set access token url.
+   *
+   * @param accessTokenUrl
+   *          Access token url.
+   *
+   * @return
+   */
+  public OAuth2AuthorizationBuilder accessTokenUrl(final String accessTokenUrl) {
     this.accessTokenUrl = accessTokenUrl;
 
     return this;
   }
 
-  public OAuth2AuthorizationBuilder clientId(String clientId) {
+  /**
+   * Oauth2 client id.
+   *
+   * @param clientId
+   *          Client Id
+   * @return
+   */
+  public OAuth2AuthorizationBuilder clientId(final String clientId) {
     this.clientId = clientId;
 
     return this;
   }
 
-  public OAuth2AuthorizationBuilder clientSecret(String clientSecret) {
+  /**
+   * Oauth2 Client secret.
+   *
+   * @param clientSecret
+   *          Client secret
+   * @return
+   */
+  public OAuth2AuthorizationBuilder clientSecret(final String clientSecret) {
     this.clientSecret = clientSecret;
 
     return this;
   }
 
+  /**
+   * Getter for Oauth2 Access Token.
+   *
+   * @return
+   */
   public String getAccessToken() throws Exception {
     final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("grant_type", grantType);
-    params.add("client_id", clientId);
-    params.add("username", username);
-    params.add("password", password);
-    params.add("scope", scope);
+    params.add("grant_type", this.grantType);
+    params.add("client_id", this.clientId);
+    params.add("username", this.username);
+    params.add("password", this.password);
+    params.add("scope", this.scope);
 
-    final ResultActions result = mockMvc.perform(post(accessTokenUrl)
+    final ResultActions result = this.mockMvc.perform(post(this.accessTokenUrl)
         .params(params)
-        .with(httpBasic(clientId, clientSecret))
+        .with(httpBasic(this.clientId, this.clientSecret))
         .accept("application/json;charset=UTF-8"));
 
     final String resultString = result.andReturn().getResponse().getContentAsString();
@@ -80,25 +106,53 @@ public class OAuth2AuthorizationBuilder {
     return jsonParser.parseMap(resultString).get("access_token").toString();
   }
 
-  public OAuth2AuthorizationBuilder grantType(String grantType) {
+  /**
+   * Oauth2 Grant type.
+   *
+   * @param grantType
+   *          grant type
+   * @return
+   */
+  public OAuth2AuthorizationBuilder grantType(final String grantType) {
     this.grantType = grantType;
 
     return this;
   }
 
-  public OAuth2AuthorizationBuilder password(String password) {
+  /**
+   * Oauth2 password.
+   *
+   * @param password
+   *          password in clear text
+   * @return
+   */
+  public OAuth2AuthorizationBuilder password(final String password) {
     this.password = password;
 
     return this;
   }
 
-  public OAuth2AuthorizationBuilder scope(String scope) {
+  /**
+   * OAuth2 scope.
+   *
+   * @param scope
+   *          Scope
+   * @return
+   */
+  public OAuth2AuthorizationBuilder scope(final String scope) {
     this.scope = scope;
 
     return this;
   }
 
-  public OAuth2AuthorizationBuilder username(String username) {
+  /**
+   * OAuth2 username.
+   *
+   * @param username
+   *          Username
+   * @return
+   */
+  public OAuth2AuthorizationBuilder username(final String username) {
     this.username = username;
 
     return this;

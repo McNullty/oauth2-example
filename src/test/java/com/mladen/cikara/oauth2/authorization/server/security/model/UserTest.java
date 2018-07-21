@@ -7,7 +7,7 @@ import org.junit.Test;
 public class UserTest {
 
   @Test
-  public void whenCreatingNewUserWithBuilder_thenNewUserObjectIsCreatedWithUUID() {
+  public void whenCreatingNewUserWithBuilder_thenNewUserObjectIsCreatedWithUuid() {
     final User user = new User.Builder()
         .email("test@test.com")
         .password("secret")
@@ -15,7 +15,7 @@ public class UserTest {
         .lastName("Test")
         .authorities(Authority.ROLE_USER).build();
 
-    assertThat(user.getUUID()).isNotNull();
+    assertThat(user.getUuid()).isNotNull();
     assertThat(user.getAuthorities()).isNotEmpty();
   }
 

@@ -30,8 +30,8 @@ public class UserServiceImplTest {
   @Test
   public void createUserSuccessfuly() {
 
-    when(userRepositoryMock.findByEmail(eq("test@test.com"))).thenReturn(Optional.empty());
-    doAnswer(returnsFirstArg()).when(userRepositoryMock).save(any(User.class));
+    when(this.userRepositoryMock.findByEmail(eq("test@test.com"))).thenReturn(Optional.empty());
+    doAnswer(returnsFirstArg()).when(this.userRepositoryMock).save(any(User.class));
 
     final RegisterUserDto registerUserDto = new RegisterUserDto.Builder()
         .email("test@test.com")
@@ -41,29 +41,33 @@ public class UserServiceImplTest {
         .passwordConfirmation("password")
         .build();
 
-    final User user = userService.registerUser(registerUserDto);
+    final User user = this.userService.registerUser(registerUserDto);
 
     assertThat(user.getEmail()).isEqualTo("test@test.com");
-    assertThat(user.getUUID()).isNotNull();
+    assertThat(user.getUuid()).isNotNull();
   }
 
+  /**
+   * Setup for test.
+   */
   @Before
   public void setup() {
 
     final ModelMapperConfig modelMapperConfig = new ModelMapperConfig();
 
-    userRepositoryMock = Mockito.mock(UserRepository.class);
+    this.userRepositoryMock = Mockito.mock(UserRepository.class);
 
     final EntityManager entityManager = Mockito.mock(EntityManager.class);
 
-    userService =
-        new UserServiceImpl(modelMapperConfig.modelMapper(), userRepositoryMock, entityManager);
+    this.userService =
+        new UserServiceImpl(modelMapperConfig.modelMapper(), this.userRepositoryMock,
+            entityManager);
   }
 
   @Test(expected = EmailAlreadyRegisterdException.class)
   public void whenCreatingNewUser_andEmailIsAlreadyRegistered_thenExceptionIsRaised()
       throws Exception {
-    when(userRepositoryMock.findByEmail(eq("test@test.com")))
+    when(this.userRepositoryMock.findByEmail(eq("test@test.com")))
         .thenReturn(Optional.of(new User.Builder().password("password").build()));
 
     final RegisterUserDto registerUserDto = new RegisterUserDto.Builder()
@@ -74,7 +78,7 @@ public class UserServiceImplTest {
         .passwordConfirmation("password")
         .build();
 
-    userService.registerUser(registerUserDto);
+    this.userService.registerUser(registerUserDto);
   }
 
   @Test(expected = PasswordsDontMatchException.class)
@@ -87,6 +91,6 @@ public class UserServiceImplTest {
         .passwordConfirmation("password2")
         .build();
 
-    userService.registerUser(registerUserDto);
+    this.userService.registerUser(registerUserDto);
   }
 }

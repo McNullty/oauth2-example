@@ -6,18 +6,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * You can set it via User.Builder password or encryptedPassword
  *
- * @author Mladen Čikara mladen.cikara@gmail.com
+ * @author mladen
  *
  */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class PasswordMustBeSetException extends RuntimeException {
 
-  /**
-   *
-   */
   private static final long serialVersionUID = -3182632265531382054L;
 
-  public PasswordMustBeSetException(String message) {
+  public PasswordMustBeSetException(final String message) {
     super(message);
   }
 }

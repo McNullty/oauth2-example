@@ -8,9 +8,8 @@ import java.util.Map;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * This is single place where security authorities are added. You can add new
- * Authorities but if you remove or rename existing authorty you must create
- * database migration with same effect.
+ * This is single place where security authorities are added. You can add new Authorities but if you
+ * remove or rename existing authorty you must create database migration with same effect.
  *
  * @author mladen
  *
@@ -27,7 +26,7 @@ public enum Authority implements GrantedAuthority {
   }
 
   @JsonCreator
-  public static Authority forValue(String value) {
+  public static Authority forValue(final String value) {
     return namesMap.get(value.toUpperCase());
   }
 

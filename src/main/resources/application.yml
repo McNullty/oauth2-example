@@ -51,5 +51,6 @@ security:
     client:
       client-id: d4486b29-7f28-43db-8d4e-44df6b5785c9
       client-secret: a6f59937-fc55-485c-bf91-c8bcdaae2e45
-      authorized-grant-types:
-        { authorization_code, password, client_credentials, implicit, refresh_token }
+      authorized-grant-types: authorization_code, password, client_credentials, implicit, refresh_token
+
+       

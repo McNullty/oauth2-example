@@ -9,9 +9,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.mladen.cikara.oauth2.authorization.server.security.model.User;
+import com.mladen.cikara.oauth2.authorization.server.security.service.AuthorizationsUtilService;
 import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
-import com.mladen.cikara.oauth2.util.OAuth2AuthorizationBuilder;
 import com.palantir.docker.compose.DockerComposeRule;
+
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -34,84 +36,98 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TestControllerWithMockMvcIntTest {
 
-	private static final String PASSWORD = "secret";
+  private static final Logger logger =
+      LoggerFactory.getLogger(TestControllerWithMockMvcIntTest.class);
 
-	private static final String USERNAME = "user@oauth2.com";
+  @ClassRule
+  public static DockerComposeRule docker = DockerComposeRuleUtil.getDockerComposeRule();
 
-	private static final Logger logger = LoggerFactory.getLogger(TestControllerWithMockMvcIntTest.class);
+  @BeforeClass
+  public static void setupClass() throws InterruptedException {
+    DockerComposeRuleUtil.setDatabaseUrlProperty(docker);
+  }
 
-	@ClassRule
-	public static DockerComposeRule docker = DockerComposeRuleUtil.getDockerComposeRule();
+  @Autowired
+  private MockMvc mockMvc;
 
-	@BeforeClass
-	public static void setupClass() throws InterruptedException {
-		DockerComposeRuleUtil.setDatabaseUrlProperty(docker);
-	}
+  @Autowired
+  private AuthorizationsUtilService authorizationsUtilService;
 
-	@Autowired
-	private MockMvc mockMvc;
+  private String getJwt() throws Exception {
+    final User user = this.authorizationsUtilService.getBasicUser();
 
-	private String getJwt() throws Exception {
-		// @formatter:off
-		final String jwt = OAuth2AuthorizationBuilder.oauth2Request(mockMvc).grantType("password")
-				.accessTokenUrl("/oauth/token").username(USERNAME).password(PASSWORD)
-				.clientId("d4486b29-7f28-43db-8d4e-44df6b5785c9").clientSecret("a6f59937-fc55-485c-bf91-c8bcdaae2e45")
-				.scope("bla").getAccessToken();
-		// @formatter:on
+    final String jwt = this.authorizationsUtilService.getAuthorizationJwt(user);
 
-		return jwt;
-	}
+    return jwt;
+  }
 
-	@Test
-	public void whenGetActuatorHealthWithAuthentication_thenOk() {
+  @Test
+  public void whenGetActuatorHealthWithAuthentication_thenOk() {
 
-		String jwt;
-		try {
-			jwt = getJwt();
+    String jwt;
+    try {
+      jwt = getJwt();
 
-			logger.debug("JWT {}", jwt);
+      logger.debug("JWT {}", jwt);
 
-			// @formatter:off
-			mockMvc.perform(get("/actuator/health").header("Authorization", "Bearer " + jwt)).andDo(print())
-					.andExpect(status().isOk()).andExpect(jsonPath("$.status", is("UP")));
-			// @formatter:on
-		} catch (final Exception e) {
-			fail("Failed getting JWT. {}", e.getMessage());
-		}
-	}
+      // @formatter:off
+      this.mockMvc
+          .perform(get("/actuator/health")
+              .header("Authorization", "Bearer " + jwt))
+          .andDo(print())
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.status", is("UP")));
+      // @formatter:on
+    } catch (final Exception e) {
+      fail("Failed getting JWT. {}", e.getMessage());
+    }
+  }
 
-	@Test
-	public void whenGetActuatorHealthWithNoAuthentication_thenUnauthorized() throws Exception {
-		// @formatter:off
-		mockMvc.perform(get("/actuator/health")).andDo(print()).andExpect(status().isUnauthorized());
-		// @formatter:on
-	}
+  @Test
+  public void whenGetActuatorHealthWithNoAuthentication_thenUnauthorized() throws Exception {
+    // @formatter:off
+    this.mockMvc
+        .perform(get("/actuator/health"))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
+    // @formatter:on
+  }
 
-	@Test
-	public void whenGetPrivateHomeWithAuthentication_thenOk() throws Exception {
+  @Test
+  public void whenGetPrivateHomeWithAuthentication_thenOk() throws Exception {
 
-		final String jwt = getJwt();
+    final String jwt = getJwt();
 
-		logger.debug("JWT {}", jwt);
+    logger.debug("JWT {}", jwt);
 
-		// @formatter:off
-		mockMvc.perform(get("/private").header("Authorization", "Bearer " + jwt)).andDo(print())
-				.andExpect(status().isOk()).andExpect(content().string(containsString("Hello from the private side")));
-		// @formatter:on
-	}
+    // @formatter:off
+    this.mockMvc
+        .perform(get("/private")
+            .header("Authorization", "Bearer " + jwt))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("Hello from the private side")));
+    // @formatter:on
+  }
 
-	@Test
-	public void whenGetPrivateHomeWithNoAuthentication_thenUnauthorized() throws Exception {
-		// @formatter:off
-		mockMvc.perform(get("/private")).andDo(print()).andExpect(status().isUnauthorized());
-		// @formatter:on
-	}
+  @Test
+  public void whenGetPrivateHomeWithNoAuthentication_thenUnauthorized() throws Exception {
+    // @formatter:off
+    this.mockMvc
+        .perform(get("/private"))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
+    // @formatter:on
+  }
 
-	@Test
-	public void whenGetPublicHomeWithNoAuthentication_thenOk() throws Exception {
-		// @formatter:off
-		mockMvc.perform(get("/public")).andDo(print()).andExpect(status().isOk())
-				.andExpect(content().string(containsString("Hello from the public side")));
-		// @formatter:on
-	}
+  @Test
+  public void whenGetPublicHomeWithNoAuthentication_thenOk() throws Exception {
+    // @formatter:off
+    this.mockMvc
+        .perform(get("/public"))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("Hello from the public side")));
+    // @formatter:on
+  }
 }

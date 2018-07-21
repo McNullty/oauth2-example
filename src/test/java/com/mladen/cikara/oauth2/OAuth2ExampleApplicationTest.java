@@ -5,9 +5,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
- * Just to be shure that Unit Tests are executed
- * 
- * @author Mladen Čikara <mladen.cikara@gmail.com>
+ * Just to be shure that Unit Tests are executed.
+ *
+ * @author mladen
  *
  */
 public class OAuth2ExampleApplicationTest {

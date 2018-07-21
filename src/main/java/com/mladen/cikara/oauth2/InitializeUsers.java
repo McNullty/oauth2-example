@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.stereotype.Component;
 
 @Priority(value = 0)
@@ -32,28 +31,26 @@ public class InitializeUsers implements ApplicationRunner {
   @Autowired
   private UserRepository userRepository;
 
-  private void insertUser(String email, String password, String firstName, String lastName,
-      Collection<Authority> authorities) {
+  private void insertUser(final String email, final String password, final String firstName,
+      final String lastName,
+      final Collection<Authority> authorities) {
 
-    final User user = new User();
-    user.setEmail(email);
-    user.setPassword(
-        PasswordEncoderFactories
-            .createDelegatingPasswordEncoder()
-            .encode(password));
-    user.setFirstName(firstName);
-    user.setLastName(lastName);
-    user.addAllAuthority(authorities);
+    User user = new User.Builder()
+        .email(email)
+        .password(password)
+        .firstName(firstName)
+        .lastName(lastName)
+        .authorities(authorities.toArray(new Authority[0])).build();
 
-    userRepository.save(user);
+    user = this.userRepository.save(user);
 
     logger.debug("Inserted user : {}", user);
   }
 
   @Override
-  public void run(ApplicationArguments args) throws Exception {
+  public void run(final ApplicationArguments args) throws Exception {
 
-    if (!userRepository.findByEmail(ADMIN_EMAIL).isPresent()) {
+    if (!this.userRepository.findByEmail(ADMIN_EMAIL).isPresent()) {
 
       final Collection<Authority> authorities = new ArrayList<>();
       authorities.addAll(Arrays.asList(Authority.ROLE_ADMIN, Authority.ROLE_USER));
@@ -61,14 +58,14 @@ public class InitializeUsers implements ApplicationRunner {
       insertUser(ADMIN_EMAIL, PASSWORD, "Application", "Admin", authorities);
     }
 
-    if (!userRepository.findByEmail(USER_EMAIL).isPresent()) {
+    if (!this.userRepository.findByEmail(USER_EMAIL).isPresent()) {
       final Collection<Authority> authorities = new ArrayList<>();
       authorities.add(Authority.ROLE_USER);
 
       insertUser(USER_EMAIL, PASSWORD, "User", "User", authorities);
     }
 
-    if (!userRepository.findByEmail(SYS_ADMIN_EMAIL).isPresent()) {
+    if (!this.userRepository.findByEmail(SYS_ADMIN_EMAIL).isPresent()) {
       final Collection<Authority> authorities = new ArrayList<>();
       authorities.add(Authority.ROLE_SYS_ADMIN);
 

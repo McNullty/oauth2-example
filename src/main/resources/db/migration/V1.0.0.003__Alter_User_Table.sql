@@ -1,0 +1,2 @@
+ALTER TABLE oauth2_user 
+	ADD COLUMN uuid UUID NOT NULL; 

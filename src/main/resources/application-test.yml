@@ -3,6 +3,7 @@
 logging:
   level:
     com.mladen.cikara.oauth2: trace
+    org.springframework: info
 
 spring:
   datasource:

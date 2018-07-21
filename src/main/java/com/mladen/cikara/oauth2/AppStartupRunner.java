@@ -15,7 +15,7 @@ public class AppStartupRunner implements ApplicationRunner {
   private static final Logger logger = LoggerFactory.getLogger(AppStartupRunner.class);
 
   @Override
-  public void run(ApplicationArguments args) throws Exception {
+  public void run(final ApplicationArguments args) throws Exception {
     logger.info("Your application started with option names : {}", args.getOptionNames());
 
   }

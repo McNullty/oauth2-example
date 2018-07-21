@@ -11,11 +11,29 @@
 
 	<name>oauth2-example</name>
 	<description>OAuth2 example with Spring Boot</description>
+	<url>https://github.com/McNullty/oauth2-example/blob/master/Readme.md</url>
+	<scm>
+		<url>https://github.com/McNullty/oauth2-example</url>
+	</scm>
+
+	<developers>
+		<developer>
+			<id>mladen</id>
+			<name>Mladen Čikara</name>
+			<email>mladen.cikara@gmail.com</email>
+			<url>http://github.com/mcnullty</url>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>Europe/Zagreb</timezone>
+		</developer>
+	</developers>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.1.RELEASE</version>
+		<version>2.0.3.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -23,8 +41,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<spring-cloud.version>Finchley.RC1</spring-cloud.version>
+		<spring-cloud.version>Finchley.RELEASE</spring-cloud.version>
 		<spring-security-jwt.version>1.0.9.RELEASE</spring-security-jwt.version>
+		<modelmapper.version>1.1.3</modelmapper.version>
 		<docker.compose.rule.junit4.version>0.33.0</docker.compose.rule.junit4.version>
 	</properties>
 
@@ -50,6 +69,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-hateoas</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.flywaydb</groupId>
@@ -73,13 +96,14 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>${modelmapper.version}</version>
 		</dependency>
 
 		<dependency>
@@ -126,6 +150,11 @@
 		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>spring-mock-mvc</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -210,6 +239,8 @@
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
+					<!-- Sets the VM argument line used when unit tests are run. -->
+					<argLine>${surefireArgLine}</argLine>
 					<excludes>
 						<exclude>**/*AbstractIntegrationTest.java</exclude>
 						<exclude>**/*IntTest.java</exclude>
@@ -223,11 +254,13 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>integration-test</id>
 						<goals>
 							<goal>integration-test</goal>
+							<goal>verify</goal>
 						</goals>
 						<configuration>
+							<!-- Sets the VM argument line used when integration tests are run. -->
+							<argLine>${failsafeArgLine}</argLine>
 							<includes>
 								<include>**/*IntTest.java</include>
 							</includes>
@@ -237,6 +270,112 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.1</version>
+				<executions>
+					<execution>
+						<id>pre-unit-test</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the name of the property containing the settings for JaCoCo 
+								runtime agent. -->
+							<propertyName>surefireArgLine</propertyName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>post-unit-test</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<!-- The Executions required by unit tests are omitted. -->
+					<!-- Prepares the property pointing to the JaCoCo runtime agent which 
+						is passed as VM argument when Maven the Failsafe plugin is executed. -->
+					<execution>
+						<id>pre-integration-test</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<propertyName>failsafeArgLine</propertyName>
+						</configuration>
+					</execution>
+					<!-- Ensures that the code coverage report for integration tests after 
+						integration tests have been run. -->
+					<execution>
+						<id>post-integration-test</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<!-- TODO: Add Jacoco check configuration -->
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>3.0.5</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.10.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>3.0.0</version>
+				<dependencies>
+					<dependency>
+						<groupId>com.puppycrawl.tools</groupId>
+						<artifactId>checkstyle</artifactId>
+						<version>8.11</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<configLocation>google_checks.xml</configLocation>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<compilerId>javac-with-errorprone</compilerId>
+					<forceJavacCompilerUse>true</forceJavacCompilerUse>
+					<!-- maven-compiler-plugin defaults to targeting Java 5, but our javac 
+						only supports >=6 -->
+					<source>8</source>
+					<target>8</target>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.plexus</groupId>
+						<artifactId>plexus-compiler-javac-errorprone</artifactId>
+						<version>2.8.3</version>
+					</dependency>
+					<!-- override plexus-compiler-javac-errorprone's dependency on Error 
+						Prone with the latest version -->
+					<dependency>
+						<groupId>com.google.errorprone</groupId>
+						<artifactId>error_prone_core</artifactId>
+						<version>2.3.1</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 		<pluginManagement>
@@ -296,5 +435,51 @@
 		</repository>
 	</repositories>
 
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.9</version>
 
+				<configuration>
+					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<!-- select non-aggregate reports -->
+							<report>report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<configLocation>google_checks.xml</configLocation>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>checkstyle</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

@@ -106,6 +106,8 @@
 			<version>${modelmapper.version}</version>
 		</dependency>
 
+		<!-- Test dependencies -->
+
 		<dependency>
 			<groupId>com.palantir.docker.compose</groupId>
 			<artifactId>docker-compose-rule-junit4</artifactId>
@@ -118,8 +120,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-		<!-- Test dependencies -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -150,6 +150,11 @@
 		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>spring-mock-mvc</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.restdocs</groupId>
+			<artifactId>spring-restdocs-restassured</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -374,6 +379,30 @@
 						<groupId>com.google.errorprone</groupId>
 						<artifactId>error_prone_core</artifactId>
 						<version>2.3.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>1.5.3</version>
+				<executions>
+					<execution>
+						<id>generate-docs</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>process-asciidoc</goal>
+						</goals>
+						<configuration>
+							<backend>html</backend>
+							<doctype>book</doctype>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.springframework.restdocs</groupId>
+						<artifactId>spring-restdocs-asciidoctor</artifactId>
 					</dependency>
 				</dependencies>
 			</plugin>

@@ -1,0 +1,92 @@
+= RESTful Notes API Guide
+author: Mladen Čikara
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+== Actuator
+
+=== Health endpoint
+
+=== CURL request example
+include::{snippets}/actuator/health/curl-request.adoc[]
+
+=== HTTPie request
+include::{snippets}/actuator/health/httpie-request.adoc[]
+
+=== Request structure
+include::{snippets}/actuator/health/http-request.adoc[]
+
+=== Request body
+include::{snippets}/actuator/health/request-body.adoc[]
+
+=== Response structure
+include::{snippets}/actuator/health/http-response.adoc[]
+
+=== Response body
+include::{snippets}/actuator/health/response-body.adoc[]
+
+== Private endpoint
+
+=== CURL request example
+include::{snippets}/private-test/curl-request.adoc[]
+
+=== HTTPie request
+include::{snippets}/private-test/httpie-request.adoc[]
+
+=== Request structure
+include::{snippets}/private-test/http-request.adoc[]
+
+=== Request body
+include::{snippets}/private-test/request-body.adoc[]
+
+=== Response structure
+include::{snippets}/private-test/http-response.adoc[]
+
+=== Response body
+include::{snippets}/private-test/response-body.adoc[]
+
+
+== Private endpoint with exception
+
+=== CURL request example
+include::{snippets}/private-test-1/curl-request.adoc[]
+
+=== HTTPie request
+include::{snippets}/private-test-1/httpie-request.adoc[]
+
+=== Request structure
+include::{snippets}/private-test-1/http-request.adoc[]
+
+=== Request body
+include::{snippets}/private-test-1/request-body.adoc[]
+
+=== Response structure
+include::{snippets}/private-test-1/http-response.adoc[]
+
+=== Response body
+include::{snippets}/private-test-1/response-body.adoc[]
+
+== Public endpoint
+
+=== CURL request example
+include::{snippets}/public-test/curl-request.adoc[]
+
+=== HTTPie request
+include::{snippets}/public-test/httpie-request.adoc[]
+
+=== Request structure
+include::{snippets}/public-test/http-request.adoc[]
+
+=== Request body
+include::{snippets}/public-test/request-body.adoc[]
+
+=== Response structure
+include::{snippets}/public-test/http-response.adoc[]
+
+=== Response body
+include::{snippets}/public-test/response-body.adoc[]
+

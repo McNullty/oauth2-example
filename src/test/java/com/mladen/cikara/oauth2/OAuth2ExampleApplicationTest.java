@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
- * Just to be shure that Unit Tests are executed.
+ * Just to be sure that Unit Tests are executed.
  *
  * @author mladen
  *

@@ -40,11 +40,14 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		
 		<java.version>1.8</java.version>
 		<spring-cloud.version>Finchley.RELEASE</spring-cloud.version>
 		<spring-security-jwt.version>1.0.9.RELEASE</spring-security-jwt.version>
 		<modelmapper.version>1.1.3</modelmapper.version>
 		<docker.compose.rule.junit4.version>0.33.0</docker.compose.rule.junit4.version>
+		
+		<snippetsDirectory>${project.build.directory}/generated-snippets</snippetsDirectory>
 	</properties>
 
 	<dependencies>
@@ -210,6 +213,18 @@
 							</sources>
 						</configuration>
 					</execution>
+                    <execution>
+                        <id>add-asciidoc</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/asciidoc</source>
+                            </sources>
+                        </configuration>
+                    </execution>
 				</executions>
 			</plugin>
 			<plugin>
@@ -396,15 +411,12 @@
 						<configuration>
 							<backend>html</backend>
 							<doctype>book</doctype>
+							<attributes>
+                                <snippets>${snippetsDirectory}</snippets>
+                            </attributes>
 						</configuration>
 					</execution>
 				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.springframework.restdocs</groupId>
-						<artifactId>spring-restdocs-asciidoctor</artifactId>
-					</dependency>
-				</dependencies>
 			</plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>

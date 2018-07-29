@@ -46,7 +46,7 @@ Compile task will fail if errors are found
 You need to comment out flyway dependency in pom.xml, and uncomment `hibernate.ddl-auto: create` in application.yml.  
 
 ## Documenting API
-Api documentation is created by Spring REST Docs. You can generate static documentation an package it in jar by running `./mvnw clean verify package`
+API documentation is created by Spring REST Docs. You can generate static documentation an package it in jar by running `./mvnw clean verify package`or create it in site with `./mvnw clean verify site` 
 
 ## TODO
 - [x] Add tests for /public, /private and /actuator/health end points

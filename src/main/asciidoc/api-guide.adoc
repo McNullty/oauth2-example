@@ -7,6 +7,27 @@ author: Mladen Čikara
 :toclevels: 4
 :sectlinks:
 
+== Register user
+
+=== CURL request example
+include::{snippets}/register/curl-request.adoc[]
+
+=== HTTPie request
+include::{snippets}/register/httpie-request.adoc[]
+
+=== Request structure
+include::{snippets}/register/http-request.adoc[]
+
+=== Request body
+include::{snippets}/register/request-body.adoc[]
+include::{snippets}/register/request-fields.adoc[]
+
+=== Response structure
+include::{snippets}/register/http-response.adoc[]
+
+=== Response body
+include::{snippets}/register/response-body.adoc[]
+
 == Actuator
 
 === Health endpoint
@@ -48,7 +69,6 @@ include::{snippets}/private-test/http-response.adoc[]
 
 === Response body
 include::{snippets}/private-test/response-body.adoc[]
-
 
 == Private endpoint with exception
 

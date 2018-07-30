@@ -1,112 +1,72 @@
-= RESTful Notes API Guide
-author: Mladen Čikara
+= OAuth2 Example API Guide
+author: Mladen Čikara;
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
 :toclevels: 4
 :sectlinks:
+:operation-curl-request-title: Example request
+:operation-http-response-title: Example response
 
-== Register user
+[[overview]]
+= Overview
 
-=== CURL request example
-include::{snippets}/register/curl-request.adoc[]
+[[overview-http-verbs]]
+== HTTP verbs
 
-=== HTTPie request
-include::{snippets}/register/httpie-request.adoc[]
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP verbs.
 
-=== Request structure
-include::{snippets}/register/http-request.adoc[]
+|===
+| Verb | Usage
 
-=== Request body
-include::{snippets}/register/request-body.adoc[]
-include::{snippets}/register/request-fields.adoc[]
+| `GET`
+| Used to retrieve a resource
 
-=== Response structure
-include::{snippets}/register/http-response.adoc[]
+| `POST`
+| Used to create a new resource
 
-=== Response body
-include::{snippets}/register/response-body.adoc[]
+| `PATCH`
+| Used to update an existing resource, including partial updates
 
-== Actuator
+| `DELETE`
+| Used to delete an existing resource
+|===
 
-=== Health endpoint
+[[overview-http-status-codes]]
+== HTTP status codes
 
-=== CURL request example
-include::{snippets}/actuator/health/curl-request.adoc[]
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP status codes.
 
-=== HTTPie request
-include::{snippets}/actuator/health/httpie-request.adoc[]
+|===
+| Status code | Usage
 
-=== Request structure
-include::{snippets}/actuator/health/http-request.adoc[]
+| `200 OK`
+| The request completed successfully
 
-=== Request body
-include::{snippets}/actuator/health/request-body.adoc[]
+| `201 Created`
+| A new resource has been created successfully. The resource's URI is available from the response's
+`Location` header
 
-=== Response structure
-include::{snippets}/actuator/health/http-response.adoc[]
+| `204 No Content`
+| An update to an existing resource has been applied successfully
 
-=== Response body
-include::{snippets}/actuator/health/response-body.adoc[]
+| `400 Bad Request`
+| The request was malformed. The response body will include an error providing further information
 
-== Private endpoint
+| `404 Not Found`
+| The requested resource did not exist
+|===
 
-=== CURL request example
-include::{snippets}/private-test/curl-request.adoc[]
+[[overview-headers]]
+== Headers
 
-=== HTTPie request
-include::{snippets}/private-test/httpie-request.adoc[]
+Every response has the following header(s):
 
-=== Request structure
-include::{snippets}/private-test/http-request.adoc[]
+include::{snippets}/headers-example/response-headers.adoc[]
 
-=== Request body
-include::{snippets}/private-test/request-body.adoc[]
-
-=== Response structure
-include::{snippets}/private-test/http-response.adoc[]
-
-=== Response body
-include::{snippets}/private-test/response-body.adoc[]
-
-== Private endpoint with exception
-
-=== CURL request example
-include::{snippets}/private-test-1/curl-request.adoc[]
-
-=== HTTPie request
-include::{snippets}/private-test-1/httpie-request.adoc[]
-
-=== Request structure
-include::{snippets}/private-test-1/http-request.adoc[]
-
-=== Request body
-include::{snippets}/private-test-1/request-body.adoc[]
-
-=== Response structure
-include::{snippets}/private-test-1/http-response.adoc[]
-
-=== Response body
-include::{snippets}/private-test-1/response-body.adoc[]
-
-== Public endpoint
-
-=== CURL request example
-include::{snippets}/public-test/curl-request.adoc[]
-
-=== HTTPie request
-include::{snippets}/public-test/httpie-request.adoc[]
-
-=== Request structure
-include::{snippets}/public-test/http-request.adoc[]
-
-=== Request body
-include::{snippets}/public-test/request-body.adoc[]
-
-=== Response structure
-include::{snippets}/public-test/http-response.adoc[]
-
-=== Response body
-include::{snippets}/public-test/response-body.adoc[]
+[[overview-errors]]
+== Errors
 

@@ -23,7 +23,7 @@ public class IndexController {
     index.add(
         linkTo(RegisterAction.class).withRel("register")
             .withDeprecation("Endpoint for registering new user"),
-        linkTo(UserController.class).withRel("users")
+        linkTo(UsersController.class).withRel("users")
             .withDeprecation("Users resources"));
     return index;
   }

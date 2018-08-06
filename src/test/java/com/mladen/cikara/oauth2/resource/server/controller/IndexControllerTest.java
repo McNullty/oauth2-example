@@ -6,6 +6,8 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -67,7 +69,11 @@ public class IndexControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("index", links(halLinks(),
-            linkWithRel("register").description("Endpoint for registering new user"))));
+            linkWithRel("register")
+              .description("Action for <<resources-register,Registering user>>")),
+            responseFields(
+                subsectionWithPath("_links")
+                  .description("<<resources-index-links,Links>> to other resources"))));
     // @formatter:on
   }
 }

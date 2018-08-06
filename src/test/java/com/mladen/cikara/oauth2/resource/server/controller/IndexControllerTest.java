@@ -70,7 +70,9 @@ public class IndexControllerTest {
         .andExpect(status().isOk())
         .andDo(document("index", links(halLinks(),
             linkWithRel("register")
-              .description("Action for <<resources-register,Registering user>>")),
+              .description("Action for <<resources-register,Registering user>>"),
+            linkWithRel("users")
+              .description("The <<resources-users,Users resource>>")),
             responseFields(
                 subsectionWithPath("_links")
                   .description("<<resources-index-links,Links>> to other resources"))));

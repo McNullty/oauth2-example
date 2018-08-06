@@ -48,9 +48,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DirtiesContext
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class IndexControllerTest {
+public class IndexControllerIntTest {
 
-  private static final Logger logger = LoggerFactory.getLogger(IndexControllerTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(IndexControllerIntTest.class);
 
   @ClassRule
   public static DockerComposeRule docker = DockerComposeRuleUtil.getDockerComposeRule();

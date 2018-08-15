@@ -379,6 +379,7 @@
 				</dependencies>
 				<configuration>
 					<configLocation>google_checks.xml</configLocation>
+					<excludes>**/generated/**/*</excludes>
 				</configuration>
 				<executions>
 					<execution>

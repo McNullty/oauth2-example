@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost/oauth2
+    username: oauth2user
+    password: oauth2user
+  flyway:
+    user: oauth2
+    password: oauth2
+    validate-on-migrate: true

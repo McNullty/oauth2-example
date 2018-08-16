@@ -6,7 +6,9 @@ logging:
     org.springframework: info
 
 spring:
-  datasource:
-#    url: jdbc:postgresql://localhost:1111/oauth2-test
-    username: oauth2user
-    password: oauth2user
+  flyway:
+    enabled: false
+  jpa:
+    generate-ddl: true
+    properties:
+      hibernate.ddl-auto: create # Use this to see what would Hibernate create in database.

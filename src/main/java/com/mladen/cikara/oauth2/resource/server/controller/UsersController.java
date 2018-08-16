@@ -36,15 +36,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/user")
-public class UserController {
+@RequestMapping(path = "/users")
+public class UsersController {
 
-  private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+  private static final Logger logger = LoggerFactory.getLogger(UsersController.class);
 
   private final UserRepository userRepository;
   private final UserService userService;
 
-  public UserController(final UserRepository userRepository, final UserService userService) {
+  public UsersController(final UserRepository userRepository, final UserService userService) {
     this.userRepository = userRepository;
     this.userService = userService;
   }

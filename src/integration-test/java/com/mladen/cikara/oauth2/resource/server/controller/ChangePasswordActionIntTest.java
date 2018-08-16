@@ -35,12 +35,12 @@ import org.springframework.test.web.servlet.MvcResult;
 @DirtiesContext
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ChangePasswordActionTest {
+public class ChangePasswordActionIntTest {
 
   private static final String PASSWORD = "secret";
   private static final String NEW_PASSWORD = "newPassword";
 
-  private static final Logger logger = LoggerFactory.getLogger(ChangePasswordActionTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(ChangePasswordActionIntTest.class);
 
   @ClassRule
   public static DockerComposeRule docker = DockerComposeRuleUtil.getDockerComposeRule();

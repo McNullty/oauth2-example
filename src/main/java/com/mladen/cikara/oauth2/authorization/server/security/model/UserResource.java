@@ -3,7 +3,7 @@ package com.mladen.cikara.oauth2.authorization.server.security.model;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
-import com.mladen.cikara.oauth2.resource.server.controller.UserController;
+import com.mladen.cikara.oauth2.resource.server.controller.UsersController;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -44,13 +44,13 @@ public class UserResource extends ResourceSupport {
     this.authorities = user.getAuthorities();
 
     final Link selfLink =
-        linkTo(methodOn(UserController.class).getUser(this.uuid.toString(),
+        linkTo(methodOn(UsersController.class).getUser(this.uuid.toString(),
             new SpringSecurityUserAdapter(user)))
                 .withSelfRel().withDeprecation("Direct access to user entity");
 
     add(selfLink);
 
-    final Link addUserAuthoritiesLink = linkTo(methodOn(UserController.class)
+    final Link addUserAuthoritiesLink = linkTo(methodOn(UsersController.class)
         .addUserAuthorities(this.uuid.toString(), new AuthorityDto(new HashSet<>()),
             new SpringSecurityUserAdapter(user)))
                 .withRel("addUserAuthority")
@@ -58,7 +58,7 @@ public class UserResource extends ResourceSupport {
 
     add(addUserAuthoritiesLink);
 
-    final Link removeUserAuthoritiesLink = linkTo(methodOn(UserController.class)
+    final Link removeUserAuthoritiesLink = linkTo(methodOn(UsersController.class)
         .removeUserAuthorities(this.uuid.toString(), new AuthorityDto(new HashSet<>()),
             new SpringSecurityUserAdapter(user)))
                 .withRel("removeUserAuthorities")
@@ -66,14 +66,14 @@ public class UserResource extends ResourceSupport {
 
     add(removeUserAuthoritiesLink);
 
-    final Link getUserAuthorityLink = linkTo(methodOn(UserController.class)
+    final Link getUserAuthorityLink = linkTo(methodOn(UsersController.class)
         .getUserAuthority(this.uuid.toString(), new SpringSecurityUserAdapter(user)))
             .withRel("getUserAuthority")
             .withDeprecation("Get list of authorities for user. You need admin role to access.");
 
     add(getUserAuthorityLink);
 
-    final Link currentUserLink = linkTo(methodOn(UserController.class)
+    final Link currentUserLink = linkTo(methodOn(UsersController.class)
         .currentUser(new SpringSecurityUserAdapter(user)))
             .withRel("currentUser")
             .withDeprecation("Get currently logged in user");
@@ -81,7 +81,7 @@ public class UserResource extends ResourceSupport {
     add(currentUserLink);
 
     final Link allUsersLink =
-        linkTo(methodOn(UserController.class).getUsers(PageRequest.of(0, 1),
+        linkTo(methodOn(UsersController.class).getUsers(PageRequest.of(0, 1),
             new SpringSecurityUserAdapter(user)))
                 .withRel("allUsers").withDeprecation("List of all users");
 

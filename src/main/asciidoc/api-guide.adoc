@@ -70,12 +70,60 @@ include::{snippets}/headers-example/response-headers.adoc[]
 [[overview-errors]]
 == Errors
 
-Whenever an error response (status code >= 400) is returned, the body will contain a JSON object
-that describes the problem. The error object has the following structure:
+TODO: Add example off error handling. Refer to rest-notes-spring-hateos project
 
-include::{snippets}/error-example/response-fields.adoc[]
+== Getting started
 
-For example, a request that attempts to apply a non-existent tag to a note will produce a
-`400 Bad Request` response:
+=== Running the service
+OAuth2 Example is written using http://projects.spring.io/spring-boot[Spring Boot] which
+makes it easy to get it up and running so that you can start exploring the REST API.
 
-include::{snippets}/error-example/http-response.adoc[]
+The first step is to clone the Git repository:
+
+[source,bash]
+----
+$ git clone https://github.com/McNullty/oauth2-example
+----
+
+Once the clone is complete, you're ready to get the service up and running:
+
+[source,bash]
+----
+$ cd oauth2-example
+$ ./mvnw clean package
+$ java -jar target/oauth2-example.jar
+----
+
+You can check that the service is up and running by executing a simple request using
+cURL: 
+
+TODO: Come back with examples when all end points are described.
+
+=== Registering new user
+
+...
+
+
+[[overview-hypermedia]]
+== Hypermedia
+
+OAuth2 Example uses hypermedia and resources include links to other resources in their
+responses. Responses are in http://stateless.co/hal_specification.html[Hypertext Application
+from resource to resource.
+Language (HAL)] format. Links can be found beneath the `_links` key. Users of the API should
+not create URIs themselves, instead they should use the above-described links to navigate
+
+[[resources]]
+== Resources
+
+[[resources-index]]
+=== Index
+
+The index provides the entry point into the service.
+
+[[resources-index-access]]
+==== Accessing the index
+
+A `GET` request is used to access the index
+
+operation::index[snippets='response-fields,http-response,links']

@@ -121,8 +121,6 @@ not create URIs themselves, instead they should use the above-described links to
 
 The index provides the entry point into the service.
 
-
-
 [[resources-index-access]]
 ==== Accessing the index
 

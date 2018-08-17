@@ -10,8 +10,6 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
 import static org.springframework.restdocs.snippet.Attributes.key;
 
 import com.mladen.cikara.oauth2.authorization.server.security.model.RegisterUserDto;
-import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
-import com.palantir.docker.compose.DockerComposeRule;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -20,8 +18,6 @@ import io.restassured.specification.RequestSpecification;
 
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +42,7 @@ import org.springframework.util.StringUtils;
  * @author mladen
  *
  */
-@ActiveProfiles("test")
+@ActiveProfiles("int-test")
 @AutoConfigureMockMvc
 @DirtiesContext
 @RunWith(SpringRunner.class)
@@ -72,14 +68,6 @@ public class RegisterActionIntTest {
   }
 
   private static final Logger logger = LoggerFactory.getLogger(RegisterActionIntTest.class);
-
-  @ClassRule
-  public static DockerComposeRule docker = DockerComposeRuleUtil.getDockerComposeRule();
-
-  @BeforeClass
-  public static void setupClass() throws InterruptedException {
-    DockerComposeRuleUtil.setDatabaseUrlProperty(docker);
-  }
 
   @Rule
   public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();

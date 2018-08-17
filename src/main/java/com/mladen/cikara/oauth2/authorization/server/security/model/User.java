@@ -104,8 +104,6 @@ public class User implements Serializable {
   private Long id;
 
   @NotNull
-  @org.hibernate.annotations.Type(type = "pg-uuid") // this annotation is Hibernate specific but I
-  // didn't find any better solution
   @Column(name = "uuid")
   private UUID uuid;
 

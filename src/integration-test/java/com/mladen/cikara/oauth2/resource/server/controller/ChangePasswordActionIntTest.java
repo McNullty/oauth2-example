@@ -5,16 +5,12 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import com.mladen.cikara.oauth2.authorization.server.security.model.Authority;
 import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.service.AuthorizationsUtilService;
-import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
-import com.palantir.docker.compose.DockerComposeRule;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -30,7 +26,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-@ActiveProfiles("test")
+@ActiveProfiles("int-test")
 @AutoConfigureMockMvc
 @DirtiesContext
 @RunWith(SpringRunner.class)
@@ -41,14 +37,6 @@ public class ChangePasswordActionIntTest {
   private static final String NEW_PASSWORD = "newPassword";
 
   private static final Logger logger = LoggerFactory.getLogger(ChangePasswordActionIntTest.class);
-
-  @ClassRule
-  public static DockerComposeRule docker = DockerComposeRuleUtil.getDockerComposeRule();
-
-  @BeforeClass
-  public static void setupClass() throws InterruptedException {
-    DockerComposeRuleUtil.setDatabaseUrlProperty(docker);
-  }
 
   @Autowired
   private MockMvc mockMvc;

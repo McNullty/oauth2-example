@@ -14,9 +14,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
 
-import com.mladen.cikara.oauth2.util.DockerComposeRuleUtil;
-import com.palantir.docker.compose.DockerComposeRule;
-
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
@@ -25,8 +22,6 @@ import io.restassured.specification.RequestSpecification;
 import javax.servlet.RequestDispatcher;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,26 +35,16 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.restassured3.RestDocumentationFilter;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-@ActiveProfiles("test")
+@ActiveProfiles("int-test")
 @AutoConfigureMockMvc
-@DirtiesContext
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class IndexControllerIntTest {
 
   private static final Logger logger = LoggerFactory.getLogger(IndexControllerIntTest.class);
-
-  @ClassRule
-  public static DockerComposeRule docker = DockerComposeRuleUtil.getDockerComposeRule();
-
-  @BeforeClass
-  public static void setupClass() throws InterruptedException {
-    DockerComposeRuleUtil.setDatabaseUrlProperty(docker);
-  }
 
   @Rule
   public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();

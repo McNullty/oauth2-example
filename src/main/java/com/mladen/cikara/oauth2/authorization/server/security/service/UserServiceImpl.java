@@ -10,7 +10,6 @@ import com.mladen.cikara.oauth2.authorization.server.security.model.User;
 import com.mladen.cikara.oauth2.authorization.server.security.repository.UserRepository;
 import com.mladen.cikara.oauth2.resource.server.controller.EmailAlreadyRegisterdException;
 import com.mladen.cikara.oauth2.resource.server.controller.PasswordsDontMatchException;
-import com.querydsl.jpa.impl.JPADeleteClause;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 
 import java.util.Optional;
@@ -114,14 +113,13 @@ public class UserServiceImpl implements UserService {
   @Transactional
   @Override
   public void deleteUser(final String uuid) throws EntityNotFoundException {
-    final QUser user = QUser.user;
+    final Optional<User> user = this.userRepository.findByUuid(UUID.fromString(uuid));
 
-    final long numberOfAffectedRows = new JPADeleteClause(this.entityManager, user)
-        .where(user.uuid.eq(UUID.fromString(uuid))).execute();
-
-    if (numberOfAffectedRows == 0) {
+    if (!user.isPresent()) {
       throw new EntityNotFoundException("Couldn't delete user, uuid not found");
     }
+
+    this.userRepository.delete(user.get());
   }
 
   @Override
